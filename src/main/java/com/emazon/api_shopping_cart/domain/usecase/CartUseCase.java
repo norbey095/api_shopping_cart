@@ -3,7 +3,7 @@ package com.emazon.api_shopping_cart.domain.usecase;
 import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
 import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
 import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
-import com.emazon.api_shopping_cart.domain.exception.theArticleNotExistException;
+import com.emazon.api_shopping_cart.domain.exception.TheArticleNotExistException;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
@@ -57,7 +57,7 @@ public class CartUseCase implements ICartServicePort {
         String userName = authenticationPersistencePort.getUserName();
         CartSave cartSave = cartPersistencePort.findCartByUserNameAndArticleId(idArticle, userName);
         if (cartSave == null) {
-            throw new theArticleNotExistException(ConstantsUseCase.ARTICLE_NOT_EXIST);
+            throw new TheArticleNotExistException(ConstantsUseCase.ARTICLE_NOT_EXIST);
         }
         this.cartPersistencePort.deleteCart(idArticle,userName);
         LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);

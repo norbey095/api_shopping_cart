@@ -44,4 +44,18 @@ class CartRestControllerTest {
                         .content(ConstantsInfTest.JSON_REQUEST))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
+
+    @Test
+    @WithMockUser(username = ConstantsInfTest.USER_NAME, roles = {ConstantsInfTest.CLIENT})
+    void deleteItems_ShouldReturnStatusOk() throws Exception {
+        ResponseSuccess responseSuccess = new ResponseSuccess(ConstantsInfTest.MESSAGESS_SUCCESS
+                , HttpStatus.OK.toString());
+        Mockito.when(cartHandler.deleteArticle(ConstantsInfTest.NUMBER_1))
+                .thenReturn(responseSuccess);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(ConstantsInfTest.URL_CART+
+                                ConstantsInfTest.ID_ARTICLE_DELETE + ConstantsInfTest.NUMBER_1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

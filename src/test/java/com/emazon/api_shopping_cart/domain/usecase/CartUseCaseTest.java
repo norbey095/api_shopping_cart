@@ -2,6 +2,7 @@ package com.emazon.api_shopping_cart.domain.usecase;
 
 import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
 import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
+import com.emazon.api_shopping_cart.domain.exception.TheArticleNotExistException;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
@@ -160,5 +161,39 @@ class CartUseCaseTest {
                 .saveCart(Mockito.any(CartSave.class));
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_5))
                 .existArticleById(ConstantsDomain.ID_ARTICLE);
+    }
+
+    @Test
+    void testDeleteArticleInCart() {
+        Integer idArticle = 1;
+        String userName = ConstantsDomain.EMAIL;
+
+        CartSave cartSave = new CartSave();
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findCartByUserNameAndArticleId(idArticle, userName)).thenReturn(cartSave);
+
+        cartUseCase.deleteCart(idArticle);
+
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .deleteCart(idArticle, userName);
+
+
+    }
+
+    @Test
+    void testDeleteArticleInCartNull() {
+        Integer idArticle = ConstantsDomain.NUMBER_1;
+        String userName = ConstantsDomain.EMAIL;
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findCartByUserNameAndArticleId(idArticle, userName)).thenReturn(null);
+
+        Assertions.assertThrows(TheArticleNotExistException.class, () -> {
+            cartUseCase.deleteCart(idArticle);
+        });
+
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
+                .deleteCart(idArticle, userName);
     }
 }

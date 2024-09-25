@@ -9,7 +9,7 @@ import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +22,7 @@ class ICartEntityMapperTest {
 
     @Test
     void testCartEntityToCartSave() {
-        LocalDate date = LocalDate.now();
+        LocalDateTime date = LocalDateTime.now();
         CartEntity cartEntity = new CartEntity();
         cartEntity.setId(ConstantsInfTest.ID);
         cartEntity.setEmail(ConstantsInfTest.EMAIL);
@@ -53,7 +53,7 @@ class ICartEntityMapperTest {
 
     @Test
     void testCartToCartSaveEntity() {
-        LocalDate date = LocalDate.now();
+        LocalDateTime date = LocalDateTime.now();
         CartSave cartSave = new CartSave();
         cartSave.setId(ConstantsInfTest.ID);
         cartSave.setEmail(ConstantsInfTest.EMAIL);

@@ -4,6 +4,7 @@ import com.emazon.api_shopping_cart.domain.util.ConstantsDomain;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,7 +13,7 @@ class CartTest {
 
     @Test
     void testCartSave() {
-        LocalDate date = LocalDate.now();
+        LocalDateTime date = LocalDateTime.now();
         CartSave article = new CartSave(ConstantsDomain.ID, ConstantsDomain.EMAIL
                 , ConstantsDomain.ID_ARTICLE
                 , ConstantsDomain.QUANTITY, date, date);
