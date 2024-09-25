@@ -1,7 +1,9 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.4'
+	id 'org.springframework.boot' version '3.3.2'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
+	id 'jacoco'
 }
 
 group = 'com.emazon'
@@ -25,13 +27,65 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	implementation 'org.mindrot:jbcrypt:0.4'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'io.github.openfeign:feign-httpclient'
+
 	compileOnly 'org.projectlombok:lombok'
+
 	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.mockito:mockito-core:4.0.0'
+}
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.3"
+	}
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacoco {
+	toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+		csv.required.set(false)
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					'**/com/emazon/api_shopping_cart/infraestructure/util*',
+					'**/com/emazon/api_shopping_cart/ApiShoppingCartApplication*',
+					'**/com/emazon/api_shopping_cart/domain/util*',
+					'**/com/emazon/api_shopping_cart/infraestructure/configuration/feign/jwt*',
+					'**/com/emazon/api_shopping_cart/infraestructure/configuration/securityconfig/UserDetailService*',
+					'**/com/emazon/api_shopping_cart/infraestructure/output/util*',
+					'**/com/emazon/api_shopping_cart/infraestructure/configuration/securityconfig/jwtconfiguration*'
+			])
+		}))
+	}
 }

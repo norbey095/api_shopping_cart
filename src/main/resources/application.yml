@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: api_shopping_cart
+  datasource:
+    url: jdbc:mysql://localhost:3306/cart_db
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    spring.jpa.hibernate.ddl-auto: update
+    spring.jpa.show-sql: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 9093
+
+jwt:
+  secret: 294A404E635266556A586E327235753878214125442A472D4B6150645367566B
+
+rangeDaysSypply: 10
+
+appDescription: "Cart API"
+appVersion: "1.0.0"
