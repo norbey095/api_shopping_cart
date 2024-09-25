@@ -14,6 +14,7 @@ import com.emazon.api_shopping_cart.domain.util.ConstantsUseCase;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,8 @@ public class CartUseCase implements ICartServicePort {
 
         if (!isUpdate) {
             validateArticleByCategory(cartRequest.getEmail(),cartRequest.getIdArticle());
-            cartRequest.setCreateDate(LocalDateTime.now());
-            cartRequest.setUpdateDate(LocalDateTime.now());
+            cartRequest.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+            cartRequest.setUpdateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             cartPersistencePort.saveCart(cartRequest);
         }
     }
@@ -59,7 +60,9 @@ public class CartUseCase implements ICartServicePort {
             throw new theArticleNotExistException(ConstantsUseCase.ARTICLE_NOT_EXIST);
         }
         this.cartPersistencePort.deleteCart(idArticle,userName);
-        this.cartPersistencePort.updateProductDateByEmail(userName,LocalDateTime.now());
+        LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
+        this.cartPersistencePort.updateProductDateByEmail(userName,date);
 
     }
 
