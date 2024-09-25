@@ -74,4 +74,18 @@ jacocoTestReport {
 		html.required.set(true)
 		csv.required.set(false)
 	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					'**/com/emazon/api_shopping_cart/infraestructure/util*',
+					'**/com/emazon/api_shopping_cart/ApiShoppingCartApplication*',
+					'**/com/emazon/api_shopping_cart/domain/util*',
+					'**/com/emazon/api_shopping_cart/infraestructure/configuration/feign/jwt*',
+					'**/com/emazon/api_shopping_cart/infraestructure/configuration/securityconfig/UserDetailService*',
+					'**/com/emazon/api_shopping_cart/infraestructure/output/util*',
+					'**/com/emazon/api_shopping_cart/infraestructure/configuration/securityconfig/jwtconfiguration*'
+			])
+		}))
+	}
 }

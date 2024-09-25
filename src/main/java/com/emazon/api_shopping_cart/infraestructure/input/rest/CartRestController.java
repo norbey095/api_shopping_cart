@@ -2,7 +2,7 @@ package com.emazon.api_shopping_cart.infraestructure.input.rest;
 
 import com.emazon.api_shopping_cart.application.dto.CartSaveRequestDto;
 import com.emazon.api_shopping_cart.application.dto.ResponseSuccess;
-import com.emazon.api_shopping_cart.application.handler.ICartSaveHandler;
+import com.emazon.api_shopping_cart.application.handler.ICartHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CartRestController {
 
-    private final ICartSaveHandler cartSaveHandler;
+    private final ICartHandler cartSaveHandler;
 
     @Operation(summary = "Add a new article to cart",
             description = "Add a new article to cart")

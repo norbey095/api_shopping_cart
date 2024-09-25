@@ -6,8 +6,6 @@ import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.infraestructure.output.entity.CartEntity;
 import org.mapstruct.Mapper;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface ICartEntityMapper {
 

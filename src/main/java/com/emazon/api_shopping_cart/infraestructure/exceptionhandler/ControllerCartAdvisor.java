@@ -5,6 +5,8 @@ import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,17 +48,31 @@ public class ControllerCartAdvisor {
     }
 
     @ExceptionHandler(TheItemIsNotAvailable.class)
-    public ResponseEntity<ExceptionResponse> handlTheItemIsNotAvailable(TheItemIsNotAvailable exception) {
+    public ResponseEntity<ExceptionResponse> handleTheItemIsNotAvailable(TheItemIsNotAvailable exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).
                 body(new ExceptionResponse(exception.getMessage()
                         , HttpStatus.NOT_FOUND.toString()));
     }
 
     @ExceptionHandler(CategoryLimitException.class)
-    public ResponseEntity<ExceptionResponse> handlCategoryLimitException(CategoryLimitException exception) {
+    public ResponseEntity<ExceptionResponse> handleCategoryLimitException(CategoryLimitException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).
                 body(new ExceptionResponse(exception.getMessage()
                         , HttpStatus.FORBIDDEN.toString()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionResponse> handleBadCredentialsException (BadCredentialsException  exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ExceptionResponse(
+                ExceptionResponseConstants.INCORRECT_DATA.getMessage(),
+                HttpStatus.UNAUTHORIZED.toString()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException (AccessDeniedException  exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionResponse(
+                ExceptionResponseConstants.ACCESS_DENE.getMessage(),
+                HttpStatus.FORBIDDEN.toString()));
     }
 
 }

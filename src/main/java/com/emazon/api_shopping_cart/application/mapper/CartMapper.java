@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface CartSaveMapper {
+public interface CartMapper {
 
     @Mapping(target = ConstantsDto.ID, ignore = true)
     @Mapping(target = ConstantsDto.EMAIL, ignore = true)

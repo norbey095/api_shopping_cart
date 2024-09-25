@@ -82,7 +82,6 @@ public class CartUseCase implements ICartSaveServicePort {
             for (Integer item : cart) {
                 ArticleResponse articleResponse = cartStockPersistencePort.existArticleById(item);
                 updateCategoryCountMap(categoryCountMap,articleResponse.getCategories());
-
             }
         }
     }
