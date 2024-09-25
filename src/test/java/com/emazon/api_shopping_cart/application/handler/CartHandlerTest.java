@@ -3,7 +3,7 @@ package com.emazon.api_shopping_cart.application.handler;
 import com.emazon.api_shopping_cart.application.dto.CartSaveRequestDto;
 import com.emazon.api_shopping_cart.application.mapper.CartMapper;
 import com.emazon.api_shopping_cart.application.util.ConstantsApplication;
-import com.emazon.api_shopping_cart.domain.api.ICartSaveServicePort;
+import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class CartHandlerTest {
     private CartMapper cartMapper;
 
     @Mock
-    private ICartSaveServicePort cartSaveServicePort;
+    private ICartServicePort cartSaveServicePort;
 
     private CartSaveRequestDto cartSaveRequestDto;
 
