@@ -2,6 +2,7 @@ package com.emazon.api_shopping_cart.infraestructure.exceptionhandler;
 
 import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
 import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
+import com.emazon.api_shopping_cart.domain.exception.theArticleNotExistException;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,13 @@ public class ControllerCartAdvisor {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionResponse(
                 ExceptionResponseConstants.ACCESS_DENE.getMessage(),
                 HttpStatus.FORBIDDEN.toString()));
+    }
+
+    @ExceptionHandler(theArticleNotExistException.class)
+    public ResponseEntity<ExceptionResponse> handleTheArticleNotExistException(theArticleNotExistException  exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse(
+                exception.getMessage(),
+                HttpStatus.BAD_REQUEST.toString()));
     }
 
 }

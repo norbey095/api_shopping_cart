@@ -24,7 +24,7 @@ public class CartRestController {
     @Operation(summary = "Add a new article to cart",
             description = "Add a new article to cart")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "article created", content = @Content),
+            @ApiResponse(responseCode = "201", description = "Article created", content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid fields", content = @Content)
     })
     @PreAuthorize("hasRole('ROLE_CLIENT')")
@@ -32,6 +32,20 @@ public class CartRestController {
     public ResponseEntity<ResponseSuccess> createCart(@Validated @RequestBody CartSaveRequestDto cartSaveRequestDto){
         ResponseSuccess responseSuccess = cartSaveHandler.saveArticle(cartSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
+                .body(responseSuccess);
+    }
+
+    @Operation(summary = "Delete article to cart",
+            description = "Delete article to cart")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok, item successfully deleted", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid action", content = @Content)
+    })
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @DeleteMapping("/")
+    public ResponseEntity<ResponseSuccess> deleteCart(@Validated @RequestParam Integer idArticle){
+        ResponseSuccess responseSuccess = cartSaveHandler.deleteArticle(idArticle);
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(responseSuccess);
     }
 }

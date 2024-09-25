@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cart")
@@ -24,7 +24,7 @@ public class CartEntity {
     @Column(name = ConstantsOutput.QUANTITY,nullable = false)
     private Integer quantity;
     @Column(name = ConstantsOutput.CREATE_DATE,nullable = false)
-    private LocalDate createDate;
+    private LocalDateTime createDate;
     @Column(name = ConstantsOutput.UPDATE_DATE,nullable = false)
-    private LocalDate updateDate;
+    private LocalDateTime updateDate;
 }

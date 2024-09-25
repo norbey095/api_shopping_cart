@@ -1,6 +1,6 @@
 package com.emazon.api_shopping_cart.infraestructure.configuration;
 
-import com.emazon.api_shopping_cart.domain.api.ICartSaveServicePort;
+import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
 import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
 import com.emazon.api_shopping_cart.domain.spi.ICartPersistencePort;
 import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
@@ -39,9 +39,9 @@ public class BeanCartConfiguration {
     }
 
     @Bean
-    public ICartSaveServicePort cartSaveServicePort(ICartStockPersistencePort cartStockPersistencePort,
-                                                    ICartPersistencePort cartSavePersistencePort,
-                                                    IAthenticationPersistencePort authenticationPersistencePort) {
+    public ICartServicePort cartSaveServicePort(ICartStockPersistencePort cartStockPersistencePort,
+                                                ICartPersistencePort cartSavePersistencePort,
+                                                IAthenticationPersistencePort authenticationPersistencePort) {
         return new CartUseCase(cartSavePersistencePort,cartStockPersistencePort,
                 authenticationPersistencePort);
     }
