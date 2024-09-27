@@ -31,4 +31,8 @@ public interface ICartRepository extends JpaRepository<CartEntity, Integer> {
     @Transactional
     @Query("UPDATE CartEntity p SET p.updateDate = :updateDate WHERE p.email = :email")
     void updateProductDateByEmail(@Param("email")String email,@Param("updateDate")LocalDateTime updateDate);
+
+    @Transactional
+    @Query("SELECT c FROM CartEntity c WHERE c.email = :userName")
+    List<CartEntity> findAllCartByUserName(@Param("userName") String userName);
 }

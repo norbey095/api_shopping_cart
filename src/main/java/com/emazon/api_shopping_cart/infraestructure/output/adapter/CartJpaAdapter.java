@@ -54,4 +54,9 @@ public class CartJpaAdapter implements ICartPersistencePort {
     public void updateProductDateByEmail(String userName, LocalDateTime updateDate) {
         cartRepository.updateProductDateByEmail(userName, LocalDateTime.now());
     }
+
+    @Override
+    public List<CartSave> findAllCartByUserName(String userName) {
+        return cartEntityMapper.cartEntityToCartSaveList(cartRepository.findAllCartByUserName(userName));
+    }
 }
