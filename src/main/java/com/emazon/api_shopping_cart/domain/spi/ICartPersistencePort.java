@@ -1,7 +1,6 @@
 package com.emazon.api_shopping_cart.domain.spi;
 
 import com.emazon.api_shopping_cart.domain.model.CartSave;
-import com.emazon.api_shopping_cart.infraestructure.output.entity.CartEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,9 +16,11 @@ public interface ICartPersistencePort {
 
     LocalDate getNextDate();
 
-    void deleteCart(Integer idArticle,String userName);
+    void deleteItemCart(Integer idArticle,String userName);
 
     void updateProductDateByEmail(String userName, LocalDateTime updateDate);
 
     List<CartSave> findAllCartByUserName(String userName);
+
+    void deleteCart(String userName);
 }

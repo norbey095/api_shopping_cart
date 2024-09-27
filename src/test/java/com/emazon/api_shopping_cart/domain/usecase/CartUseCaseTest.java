@@ -176,7 +176,7 @@ class CartUseCaseTest {
         cartUseCase.deleteCart(idArticle);
 
         Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
-                .deleteCart(idArticle, userName);
+                .deleteItemCart(idArticle, userName);
 
     }
 
@@ -193,7 +193,7 @@ class CartUseCaseTest {
         });
 
         Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
-                .deleteCart(idArticle, userName);
+                .deleteItemCart(idArticle, userName);
     }
 
     @Test

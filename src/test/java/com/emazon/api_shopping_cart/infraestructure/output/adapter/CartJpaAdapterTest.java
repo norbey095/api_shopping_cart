@@ -99,7 +99,7 @@ class CartJpaAdapterTest {
         Integer idArticle = ConstantsInfTest.NUMBER_1;
         String userName= ConstantsInfTest.NAME;
 
-        cartJpaAdapter.deleteCart(idArticle,userName);
+        cartJpaAdapter.deleteItemCart(idArticle,userName);
 
         Mockito.verify(cartRepository, Mockito.times(ConstantsDomain.NUMBER_1))
                 .deleteByIdArticle(idArticle, userName);

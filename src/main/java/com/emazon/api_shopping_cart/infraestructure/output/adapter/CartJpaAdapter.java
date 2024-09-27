@@ -46,7 +46,7 @@ public class CartJpaAdapter implements ICartPersistencePort {
     }
 
     @Override
-    public void deleteCart(Integer idArticle,String userName) {
+    public void deleteItemCart(Integer idArticle,String userName) {
         cartRepository.deleteByIdArticle(idArticle, userName);
     }
 
@@ -58,5 +58,10 @@ public class CartJpaAdapter implements ICartPersistencePort {
     @Override
     public List<CartSave> findAllCartByUserName(String userName) {
         return cartEntityMapper.cartEntityToCartSaveList(cartRepository.findAllCartByUserName(userName));
+    }
+
+    @Override
+    public void deleteCart(String userName) {
+        cartRepository.deleteByEmail(userName);
     }
 }

@@ -11,4 +11,6 @@ public interface ICartServicePort {
     void deleteCart(Integer idArticle);
 
     CartDetailResponse getCart(ArticleCartRequest articleCartRequest);
+
+    void buyArticle();
 }

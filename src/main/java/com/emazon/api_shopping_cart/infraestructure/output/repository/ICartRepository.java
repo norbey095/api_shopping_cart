@@ -35,4 +35,9 @@ public interface ICartRepository extends JpaRepository<CartEntity, Integer> {
     @Transactional
     @Query("SELECT c FROM CartEntity c WHERE c.email = :userName")
     List<CartEntity> findAllCartByUserName(@Param("userName") String userName);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CartEntity c WHERE c.email = :email")
+    void deleteByEmail(@Param("email")String email);
 }

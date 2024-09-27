@@ -14,7 +14,7 @@ public class ConstantsConfig {
     public static final Integer SEVEN_LETTERS = 7;
     public static final String URL_TRANSACTION_PORT = "http://localhost:9092";
     public static final String TRANSACTION = "transaction";
-    public static final String URL_TRANSACTION_ARTICLEID = "/supply/{articleId}";
+    public static final String URL_TRANSACTION_SALES= "/sales/";
 
 
     private ConstantsConfig() {
