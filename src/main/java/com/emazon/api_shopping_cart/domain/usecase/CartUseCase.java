@@ -1,8 +1,9 @@
 package com.emazon.api_shopping_cart.domain.usecase;
 
-import com.emazon.api_shopping_cart.domain.api.ICartSaveServicePort;
+import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
 import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
 import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
+import com.emazon.api_shopping_cart.domain.exception.TheArticleNotExistException;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
@@ -12,11 +13,13 @@ import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
 import com.emazon.api_shopping_cart.domain.util.ConstantsUseCase;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CartUseCase implements ICartSaveServicePort {
+public class CartUseCase implements ICartServicePort {
 
     private final ICartPersistencePort cartPersistencePort;
     private final IAthenticationPersistencePort authenticationPersistencePort;
@@ -43,10 +46,24 @@ public class CartUseCase implements ICartSaveServicePort {
 
         if (!isUpdate) {
             validateArticleByCategory(cartRequest.getEmail(),cartRequest.getIdArticle());
-            cartRequest.setCreateDate(LocalDate.now());
-            cartRequest.setUpdateDate(LocalDate.now());
+            cartRequest.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+            cartRequest.setUpdateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             cartPersistencePort.saveCart(cartRequest);
         }
+    }
+
+    @Override
+    public void deleteCart(Integer idArticle) {
+        String userName = authenticationPersistencePort.getUserName();
+        CartSave cartSave = cartPersistencePort.findCartByUserNameAndArticleId(idArticle, userName);
+        if (cartSave == null) {
+            throw new TheArticleNotExistException(ConstantsUseCase.ARTICLE_NOT_EXIST);
+        }
+        this.cartPersistencePort.deleteCart(idArticle,userName);
+        LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
+        this.cartPersistencePort.updateProductDateByEmail(userName,date);
+
     }
 
     private ArticleResponse validateArticleExists(Integer id) {
@@ -65,7 +82,7 @@ public class CartUseCase implements ICartSaveServicePort {
         CartSave cartSave = cartPersistencePort.findCartByUserNameAndArticleId(id, userName);
         if (cartSave != null) {
             cartSave.setQuantity((cartSave.getQuantity() + quantityRequest));
-            cartSave.setUpdateDate(LocalDate.now());
+            cartSave.setUpdateDate(LocalDateTime.now());
 
             cartPersistencePort.saveCart(cartSave);
             isUpdate = true;

@@ -4,6 +4,7 @@ import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,7 +16,7 @@ class CartEntityTest {
 
     @Test
     void testCartEntitySet() {
-        LocalDate date = LocalDate.now();
+        LocalDateTime date = LocalDateTime.now();
         cartEntity = new CartEntity();
         cartEntity.setId(ConstantsInfTest.ID);
         cartEntity.setEmail(ConstantsInfTest.EMAIL);
@@ -35,7 +36,7 @@ class CartEntityTest {
 
     @Test
     void testCartEntityConstructor() {
-        LocalDate date = LocalDate.now();
+        LocalDateTime date = LocalDateTime.now();
         cartEntity = new CartEntity(ConstantsInfTest.ID,ConstantsInfTest.EMAIL
                 ,ConstantsInfTest.ID_ARTICLE,ConstantsInfTest.QUANTITY,date,date);
 

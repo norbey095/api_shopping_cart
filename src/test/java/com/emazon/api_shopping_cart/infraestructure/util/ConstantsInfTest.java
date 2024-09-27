@@ -25,6 +25,7 @@ public class ConstantsInfTest {
     public static final String MESSAGESS_SUCCESS = "Cart created successfully";
     public static final String URL_CART= "/shopping/cart/";
     public static final String JSON_REQUEST= "{ \"idArticle\": 2, \"quantity\": 800 }";
+    public static final String ID_ARTICLE_DELETE = "?idArticle=";
 
 
 

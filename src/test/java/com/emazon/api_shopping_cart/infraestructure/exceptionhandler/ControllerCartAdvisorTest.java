@@ -3,6 +3,7 @@ package com.emazon.api_shopping_cart.infraestructure.exceptionhandler;
 import com.emazon.api_shopping_cart.application.handler.ICartHandler;
 import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
 import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
+import com.emazon.api_shopping_cart.domain.exception.TheArticleNotExistException;
 import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import feign.FeignException;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +22,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -44,6 +50,9 @@ class ControllerCartAdvisorTest {
 
     @Mock
     private FeignException feignException;
+
+    @Mock
+    private BindingResult bindingResult;
 
     @BeforeEach
     public void setUp() {
@@ -111,4 +120,35 @@ class ControllerCartAdvisorTest {
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(ConstantsInfTest.SERVICE_NOT_AVAILABLE, response.getBody().getMessage());
     }
+
+    @Test
+    void testTheArticleNotExistException() {
+        ResponseEntity<ExceptionResponse> response = advisor.handleTheArticleNotExistException(
+                new TheArticleNotExistException(ConstantsInfTest.EMAIL));
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(ConstantsInfTest.EMAIL, response.getBody().getMessage());
+    }
+
+    /*@Test
+    void testHandleMethodArgumentNotValidException() {
+        // Arrange
+        List<ObjectError> errors = new ArrayList<>();
+        errors.add(new ObjectError("objectName", "Error message 1"));
+        errors.add(new ObjectError("objectName", "Error message 2"));
+
+        Mockito.when(methodArgumentNotValidException.getBindingResult()).thenReturn(bindingResult);
+        Mockito.when(bindingResult.getAllErrors()).thenReturn(errors);
+
+        // Act
+        ResponseEntity<ExceptionResponse> response = advisor
+                .handleMethodArgumentNotValidException(methodArgumentNotValidException);
+
+        // Assert
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals("Error message 1 Error message 2", response.getBody().getMessage());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.toString(), response.getBody().getStatus());
+    }*/
 }

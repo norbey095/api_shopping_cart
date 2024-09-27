@@ -1,19 +1,20 @@
 package com.emazon.api_shopping_cart.domain.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CartSave {
     private Integer id;
     private String email;
     private Integer idArticle;
     private Integer quantity;
-    private LocalDate createDate;
-    private LocalDate updateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
 
     public CartSave() {
     }
 
-    public CartSave(Integer id, String email, Integer idArticle, Integer quantity, LocalDate createDate, LocalDate updateDate) {
+    public CartSave(Integer id, String email, Integer idArticle, Integer quantity, LocalDateTime createDate
+            , LocalDateTime updateDate) {
         this.id = id;
         this.email = email;
         this.idArticle = idArticle;
@@ -54,19 +55,19 @@ public class CartSave {
         this.quantity = quantity;
     }
 
-    public LocalDate getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDate createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public LocalDate getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(LocalDate updateDate) {
+    public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
     }
 }

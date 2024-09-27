@@ -21,6 +21,7 @@ public class ConstantsApplication {
     public static final String CLIENT_EXCEPTION = "Client Exception";
     public static final String FEIGN_EXCEPTION = "Feign Exception";
     public static final String DAY = "day";
+    public static final String DELETE_CORRECT = "Has been successfully removed";
 
 
 

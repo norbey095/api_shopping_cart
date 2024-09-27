@@ -1,6 +1,7 @@
 package com.emazon.api_shopping_cart.infraestructure.output.adapter;
 
 import com.emazon.api_shopping_cart.domain.model.CartSave;
+import com.emazon.api_shopping_cart.domain.util.ConstantsDomain;
 import com.emazon.api_shopping_cart.infraestructure.output.entity.CartEntity;
 import com.emazon.api_shopping_cart.infraestructure.output.mapper.ICartEntityMapper;
 import com.emazon.api_shopping_cart.infraestructure.output.repository.ICartRepository;
@@ -8,6 +9,7 @@ import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,5 +91,33 @@ class CartJpaAdapterTest {
         LocalDate actualNextDate = cartJpaAdapter.getNextDate();
 
         Assertions.assertEquals(expectedNextDate, actualNextDate);
+    }
+
+    @Test
+    void testDeleteCart() {
+        Integer idArticle = ConstantsInfTest.NUMBER_1;
+        String userName= ConstantsInfTest.NAME;
+
+        cartJpaAdapter.deleteCart(idArticle,userName);
+
+        Mockito.verify(cartRepository, Mockito.times(ConstantsDomain.NUMBER_1))
+                .deleteByIdArticle(idArticle, userName);
+    }
+
+    @Test
+    void testUpdateProductDateByEmail() {
+        String userName= ConstantsInfTest.NAME;
+        LocalDateTime updateDate = LocalDateTime.now().plusDays(day);
+
+        cartJpaAdapter.updateProductDateByEmail(userName,updateDate);
+
+        ArgumentCaptor<LocalDateTime> captor = ArgumentCaptor.forClass(LocalDateTime.class);
+        Mockito.verify(cartRepository, Mockito.times(ConstantsDomain.NUMBER_1))
+                .updateProductDateByEmail(Mockito.eq(userName), captor.capture());
+
+        LocalDateTime capturedDate = captor.getValue();
+        Assertions.assertTrue(capturedDate.isAfter(LocalDateTime.now().minusMinutes(1)) &&
+                        capturedDate.isBefore(LocalDateTime.now().plusMinutes(1)),
+                ConstantsDomain.DATE_NO_EXPE);
     }
 }

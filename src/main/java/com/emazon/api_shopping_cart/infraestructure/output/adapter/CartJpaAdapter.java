@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -42,5 +43,15 @@ public class CartJpaAdapter implements ICartPersistencePort {
     @Override
     public LocalDate getNextDate() {
         return LocalDate.now().plusDays(day);
+    }
+
+    @Override
+    public void deleteCart(Integer idArticle,String userName) {
+        cartRepository.deleteByIdArticle(idArticle, userName);
+    }
+
+    @Override
+    public void updateProductDateByEmail(String userName, LocalDateTime updateDate) {
+        cartRepository.updateProductDateByEmail(userName, LocalDateTime.now());
     }
 }
