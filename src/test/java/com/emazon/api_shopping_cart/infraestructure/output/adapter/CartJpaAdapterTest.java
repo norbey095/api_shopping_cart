@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,5 +120,22 @@ class CartJpaAdapterTest {
         Assertions.assertTrue(capturedDate.isAfter(LocalDateTime.now().minusMinutes(1)) &&
                         capturedDate.isBefore(LocalDateTime.now().plusMinutes(1)),
                 ConstantsDomain.DATE_NO_EXPE);
+    }
+
+    @Test
+    void testFindAllCartByUserName() {
+        String userName = ConstantsInfTest.NAME;
+
+        Mockito.when(cartRepository.findAllCartByUserName(userName))
+                .thenReturn(new ArrayList<>());
+        Mockito.when(cartEntityMapper.cartEntityToCartSaveList(Mockito.anyList())).thenReturn(new ArrayList<>());
+
+        cartJpaAdapter.findAllCartByUserName(userName);
+
+        Mockito.verify(cartRepository, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+
+        Mockito.verify(cartEntityMapper, Mockito.times(ConstantsDomain.NUMBER_1))
+                .cartEntityToCartSaveList(Mockito.anyList());
     }
 }
