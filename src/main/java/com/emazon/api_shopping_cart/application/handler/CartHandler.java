@@ -42,4 +42,10 @@ public class CartHandler implements ICartHandler {
                 .articleCartRequestDtoToArticleCartRequest(articleCartRequestDto);
         return cartMapper.cartDetailResponseToCartDetailResponseDto(cartSaveServicePort.getCart(articleCartRequest));
     }
+
+    @Override
+    public ResponseSuccess buyCart() {
+        cartSaveServicePort.buyArticle();
+        return new ResponseSuccess(ConstantsDto.BUY_CORRECT,HttpStatus.OK.toString());
+    }
 }

@@ -66,4 +66,12 @@ public class CartRestController {
             @RequestBody ArticleCartRequestDto articleCartRequestDto) {
         return ResponseEntity.ok(cartHandler.getCart(articleCartRequestDto));
     }
+
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @PostMapping("/buy")
+    public ResponseEntity<ResponseSuccess> buyArticle(){
+        ResponseSuccess responseSuccess = cartHandler.buyCart();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(responseSuccess);
+    }
 }

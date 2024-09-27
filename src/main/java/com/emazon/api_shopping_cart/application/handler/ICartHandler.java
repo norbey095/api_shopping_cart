@@ -12,4 +12,6 @@ public interface ICartHandler {
     ResponseSuccess deleteArticle(Integer idArticle);
 
     CartDetailResponseDto getCart(ArticleCartRequestDto articleCartRequestDto);
+
+    ResponseSuccess buyCart();
 }
