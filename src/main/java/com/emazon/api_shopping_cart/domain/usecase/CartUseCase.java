@@ -94,7 +94,7 @@ public class CartUseCase implements ICartServicePort {
         List<ArticleResponse> articleResponseList = getArticleDetails(myCart);
         validateData(articleResponseList);
 
-        saveSaleInTransaction(myCart,articleResponseList);
+        validateQuantity(myCart,articleResponseList);
 
         saveSaleInTransaction(myCart);
         cartPersistencePort.deleteCart(userName);
@@ -230,7 +230,7 @@ public class CartUseCase implements ICartServicePort {
     }
 
 
-    private void saveSaleInTransaction(List<CartSave> myCart,List<ArticleResponse> articleResponseList){
+    private void validateQuantity(List<CartSave> myCart,List<ArticleResponse> articleResponseList){
         for(ArticleResponse article: articleResponseList){
             CartSave cartSave = getItemFromCart(myCart,article.getId());
             validateAvailableQuantity(article.getQuantity(),cartSave.getQuantity(),article.getName());
