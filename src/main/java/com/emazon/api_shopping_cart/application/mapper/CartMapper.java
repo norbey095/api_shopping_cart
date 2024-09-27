@@ -1,9 +1,13 @@
 package com.emazon.api_shopping_cart.application.mapper;
 
 
-import com.emazon.api_shopping_cart.application.dto.CartSaveRequestDto;
+import com.emazon.api_shopping_cart.application.dto.cart.CartRequestDto;
+import com.emazon.api_shopping_cart.application.dto.cartdetail.ArticleCartRequestDto;
+import com.emazon.api_shopping_cart.application.dto.cartdetail.CartDetailResponseDto;
 import com.emazon.api_shopping_cart.application.util.ConstantsDto;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
+import com.emazon.api_shopping_cart.domain.model.cartdetail.ArticleCartRequest;
+import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -14,6 +18,11 @@ public interface CartMapper {
     @Mapping(target = ConstantsDto.EMAIL, ignore = true)
     @Mapping(target = ConstantsDto.CREATE_DATE, ignore = true)
     @Mapping(target = ConstantsDto.UPDATE_DATE, ignore = true)
-    CartSave cartSaveRequestDtoToCartSave(CartSaveRequestDto cartSaveRequestDto);
+    CartSave cartSaveRequestDtoToCartSave(CartRequestDto cartSaveRequestDto);
+
+    @Mapping(target = ConstantsDto.ARTICLE_ID, ignore = true)
+    ArticleCartRequest articleCartRequestDtoToArticleCartRequest(ArticleCartRequestDto articleCartRequestDto);
+
+    CartDetailResponseDto cartDetailResponseToCartDetailResponseDto(CartDetailResponse cartDetailResponse);
 }
 

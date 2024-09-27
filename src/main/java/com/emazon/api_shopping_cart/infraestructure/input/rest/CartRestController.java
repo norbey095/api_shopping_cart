@@ -1,7 +1,9 @@
 package com.emazon.api_shopping_cart.infraestructure.input.rest;
 
-import com.emazon.api_shopping_cart.application.dto.CartSaveRequestDto;
-import com.emazon.api_shopping_cart.application.dto.ResponseSuccess;
+import com.emazon.api_shopping_cart.application.dto.cart.CartRequestDto;
+import com.emazon.api_shopping_cart.application.dto.cart.ResponseSuccess;
+import com.emazon.api_shopping_cart.application.dto.cartdetail.ArticleCartRequestDto;
+import com.emazon.api_shopping_cart.application.dto.cartdetail.CartDetailResponseDto;
 import com.emazon.api_shopping_cart.application.handler.ICartHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CartRestController {
 
-    private final ICartHandler cartSaveHandler;
+    private final ICartHandler cartHandler;
 
     @Operation(summary = "Add a new article to cart",
             description = "Add a new article to cart")
@@ -29,8 +31,8 @@ public class CartRestController {
     })
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping("/")
-    public ResponseEntity<ResponseSuccess> createCart(@Validated @RequestBody CartSaveRequestDto cartSaveRequestDto){
-        ResponseSuccess responseSuccess = cartSaveHandler.saveArticle(cartSaveRequestDto);
+    public ResponseEntity<ResponseSuccess> createCart(@Validated @RequestBody CartRequestDto cartRequestDto){
+        ResponseSuccess responseSuccess = cartHandler.saveArticle(cartRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseSuccess);
     }
@@ -44,8 +46,24 @@ public class CartRestController {
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @DeleteMapping("/")
     public ResponseEntity<ResponseSuccess> deleteCart(@Validated @RequestParam Integer idArticle){
-        ResponseSuccess responseSuccess = cartSaveHandler.deleteArticle(idArticle);
+        ResponseSuccess responseSuccess = cartHandler.deleteArticle(idArticle);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseSuccess);
+    }
+
+    @Operation(summary = "Get my cart",
+            description = "Get my cart")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No data found in the database", content = @Content),
+            @ApiResponse(responseCode = "503", description = "Service Unavailable", content = @Content)
+    })
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @GetMapping("/")
+    public ResponseEntity<CartDetailResponseDto> getCartsByUserName(
+            @RequestBody ArticleCartRequestDto articleCartRequestDto) {
+        return ResponseEntity.ok(cartHandler.getCart(articleCartRequestDto));
     }
 }

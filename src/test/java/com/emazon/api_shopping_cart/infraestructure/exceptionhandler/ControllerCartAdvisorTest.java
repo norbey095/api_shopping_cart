@@ -1,9 +1,7 @@
 package com.emazon.api_shopping_cart.infraestructure.exceptionhandler;
 
 import com.emazon.api_shopping_cart.application.handler.ICartHandler;
-import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
-import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
-import com.emazon.api_shopping_cart.domain.exception.TheArticleNotExistException;
+import com.emazon.api_shopping_cart.domain.exception.*;
 import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import feign.FeignException;
 import org.junit.jupiter.api.Assertions;
@@ -23,11 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -131,24 +125,23 @@ class ControllerCartAdvisorTest {
         Assertions.assertEquals(ConstantsInfTest.EMAIL, response.getBody().getMessage());
     }
 
-    /*@Test
-    void testHandleMethodArgumentNotValidException() {
-        // Arrange
-        List<ObjectError> errors = new ArrayList<>();
-        errors.add(new ObjectError("objectName", "Error message 1"));
-        errors.add(new ObjectError("objectName", "Error message 2"));
 
-        Mockito.when(methodArgumentNotValidException.getBindingResult()).thenReturn(bindingResult);
-        Mockito.when(bindingResult.getAllErrors()).thenReturn(errors);
+    @Test
+    void testNoDataFoundException() {
+        ResponseEntity<ExceptionResponse> response = advisor.handleNoDataFoundException(new NoDataFoundException());
 
-        // Act
-        ResponseEntity<ExceptionResponse> response = advisor
-                .handleMethodArgumentNotValidException(methodArgumentNotValidException);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(ConstantsInfTest.NO_DATA_FOUND_EXCEPTION_MESSAGE, response.getBody().getMessage());
+    }
 
-        // Assert
+    @Test
+    void testPaginationNotAllowedException() {
+        ResponseEntity<ExceptionResponse> response = advisor.handlePaginationNotAllowedException
+                (new PaginationNotAllowedException());
+
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals("Error message 1 Error message 2", response.getBody().getMessage());
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.toString(), response.getBody().getStatus());
-    }*/
+        Assertions.assertEquals(ConstantsInfTest.NEGATIVE_NOT_ALLOWED, response.getBody().getMessage());
+    }
 }

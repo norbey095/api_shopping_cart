@@ -1,8 +1,6 @@
 package com.emazon.api_shopping_cart.infraestructure.exceptionhandler;
 
-import com.emazon.api_shopping_cart.domain.exception.CategoryLimitException;
-import com.emazon.api_shopping_cart.domain.exception.TheItemIsNotAvailable;
-import com.emazon.api_shopping_cart.domain.exception.TheArticleNotExistException;
+import com.emazon.api_shopping_cart.domain.exception.*;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,4 +81,17 @@ public class ControllerCartAdvisor {
                 HttpStatus.BAD_REQUEST.toString()));
     }
 
+    @ExceptionHandler(NoDataFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNoDataFoundException(NoDataFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse(
+                ExceptionResponseConstants.NO_DATA_FOUND_EXCEPTION_MESSAGE.getMessage()
+                , HttpStatus.NOT_FOUND.toString()));
+    }
+
+    @ExceptionHandler(PaginationNotAllowedException.class)
+    public ResponseEntity<ExceptionResponse> handlePaginationNotAllowedException(PaginationNotAllowedException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                ExceptionResponseConstants.NEGATIVE_NOT_ALLOWED.getMessage()
+                , HttpStatus.BAD_REQUEST.toString()));
+    }
 }

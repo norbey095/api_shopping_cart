@@ -9,6 +9,7 @@ public class ConstantsInfTest {
     public static final double PRICE= 3000;
     public static final Integer ID_ARTICLE= 1;
     public static final Integer NUMBER_1 = 1;
+    public static final Integer NUMBER_0 = 0;
     public static final Integer NUMBER_2 = 2;
     public static final Integer NUMBER_3 = 3;
     public static final Integer NUMBER_10 = 10;
@@ -24,8 +25,12 @@ public class ConstantsInfTest {
     public static final String CLIENT = "CLIENT";
     public static final String MESSAGESS_SUCCESS = "Cart created successfully";
     public static final String URL_CART= "/shopping/cart/";
+    public static final String URL_GET_CART= "/shopping/cart/";
     public static final String JSON_REQUEST= "{ \"idArticle\": 2, \"quantity\": 800 }";
+    public static final String JSON_REQUEST_GET= "{ \"page\": 1, \"size\": 1}";
     public static final String ID_ARTICLE_DELETE = "?idArticle=";
+    public static final String NO_DATA_FOUND_EXCEPTION_MESSAGE = "No data found in the database";
+    public static final String  NEGATIVE_NOT_ALLOWED = "The page and size fields cannot be negative or null.";
 
 
 

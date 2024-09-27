@@ -1,4 +1,4 @@
-package com.emazon.api_shopping_cart.application.dto;
+package com.emazon.api_shopping_cart.application.dto.cart;
 
 import com.emazon.api_shopping_cart.application.util.ConstantsDto;
 import jakarta.validation.constraints.Min;
@@ -8,7 +8,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class CartSaveRequestDto {
+public class CartRequestDto {
     @NotNull(message = ConstantsDto.ID_ARTICLE_REQUIRED)
     private Integer idArticle;
     @NotNull(message = ConstantsDto.QUANTITY_REQUIRED)

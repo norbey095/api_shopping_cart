@@ -8,7 +8,9 @@ public enum ExceptionResponseConstants {
     SERVICE_NOT_AVAILABLE("The service is not available, please try again later."),
     INCORRECT_DATA("Incorrect login information"),
     ACCESS_DENE("Access denied"),
-    ARTICLE_NOT_EXIST("The article does not exist in the database.");
+    NO_DATA_FOUND_EXCEPTION_MESSAGE("No data found in the database"),
+    NEGATIVE_NOT_ALLOWED("The page and size fields cannot be negative or null.");
+
 
     private final String message;
 

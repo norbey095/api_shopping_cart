@@ -1,4 +1,4 @@
-package com.emazon.api_shopping_cart.application.dto;
+package com.emazon.api_shopping_cart.application.dto.cart;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

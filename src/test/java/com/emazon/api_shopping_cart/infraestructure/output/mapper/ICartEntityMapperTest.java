@@ -6,11 +6,13 @@ import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.infraestructure.output.entity.CartEntity;
 import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -113,5 +115,45 @@ class ICartEntityMapperTest {
         ArticleResponse articleResponse = cartEntityMapper.articleResponseDtoToArticleResponse(null);
 
         assertNull(articleResponse);
+    }
+
+    @Test
+    void testCartEntityToCartSaveList() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        CartEntity cartEntity = new CartEntity(ConstantsInfTest.NUMBER_1
+                , ConstantsInfTest.EMAIL, ConstantsInfTest.NUMBER_1
+                ,ConstantsInfTest.NUMBER_1, localDateTime, localDateTime);
+
+        List<CartEntity> cartEntityList = new ArrayList<>();
+        cartEntityList.add(cartEntity);
+
+
+        List<CartSave> cartSave = cartEntityMapper.cartEntityToCartSaveList(cartEntityList);
+
+
+        Assertions.assertNotNull(cartSave);
+        Assertions.assertEquals(ConstantsInfTest.NUMBER_1, cartSave.get(ConstantsInfTest.NUMBER_0).getId());
+        Assertions.assertEquals(ConstantsInfTest.EMAIL, cartSave.get(ConstantsInfTest.NUMBER_0).getEmail());
+    }
+
+    @Test
+    void testArticleResponseDtoToArticleResponseList() {
+        ArticleResponseDto articleResponseDto = new ArticleResponseDto();
+        articleResponseDto.setId(ConstantsInfTest.ID);
+        articleResponseDto.setName(ConstantsInfTest.NAME);
+        articleResponseDto.setDescription(ConstantsInfTest.DESCRIPTION);
+        articleResponseDto.setQuantity(ConstantsInfTest.QUANTITY);
+        articleResponseDto.setPrice(ConstantsInfTest.PRICE);
+        articleResponseDto.setBrand(new BrandArticleResponseDto());
+        articleResponseDto.setCategories(new ArrayList<>());
+
+        List<ArticleResponseDto> articleResponseDtoList = new ArrayList<>();
+        articleResponseDtoList.add(articleResponseDto);
+
+
+        List<ArticleResponse> cartSave = cartEntityMapper.articleResponseDtoToArticleResponseList(articleResponseDtoList);
+
+
+        Assertions.assertNotNull(cartSave);
     }
 }

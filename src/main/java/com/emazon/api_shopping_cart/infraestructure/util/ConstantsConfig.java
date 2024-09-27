@@ -10,6 +10,7 @@ public class ConstantsConfig {
     public static final String URL_STOCK_PORT = "http://localhost:9090";
     public static final String STOCK = "stock";
     public static final String URL_STOCK_ARTICLEID = "/stock/article/{articleId}";
+    public static final String URL_STOCK_LIST_ARTICLE = "/stock/article/getItemsCart";
     public static final Integer SEVEN_LETTERS = 7;
     public static final String URL_TRANSACTION_PORT = "http://localhost:9092";
     public static final String TRANSACTION = "transaction";
