@@ -2,7 +2,6 @@ package com.emazon.api_shopping_cart.domain.usecase;
 
 import com.emazon.api_shopping_cart.domain.exception.*;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
-import com.emazon.api_shopping_cart.domain.model.cartdetail.ArticleCartRequest;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
 import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
@@ -198,39 +197,35 @@ class CartUseCaseTest {
 
     @Test
     void testGetCart() {
-        ArticleCartRequest article = new ArticleCartRequest(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         List<CartSave> cartSaveList = new ArrayList<>();
         cartSaveList.add(cartDataBase);
         List<ArticleResponse> articleResponseList = new ArrayList<>();
         articleResponseList.add(articleResponse);
 
         String userName = ConstantsDomain.EMAIL;
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
 
         Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
         Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
-        Mockito.when(cartStockPersistencePort.getArticleDetails(Mockito.
-                any(ArticleCartRequest.class))).thenReturn(articleResponseList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
+                .thenReturn(articleResponseList);
 
-        cartUseCase.getCart(article);
+        cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
 
         Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
                 .findAllCartByUserName(userName);
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
                 .getUserName();
-        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
     }
 
     @Test
     void testGetCartPageNull() {
-        ArticleCartRequest article = new ArticleCartRequest(null, ConstantsDomain.NUMBER_0
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
-
         Assertions.assertThrows(PaginationNotAllowedException.class, () -> {
-            cartUseCase.getCart(article);
+            cartUseCase.getCart(null, ConstantsDomain.NUMBER_0
+                    ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         });
 
         String userName = ConstantsDomain.EMAIL;
@@ -240,17 +235,15 @@ class CartUseCaseTest {
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
                 .getUserName();
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
+                .getArticleDetails(null, ConstantsDomain.NUMBER_0
+                        ,true,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
     }
 
     @Test
     void testGetCartSizeNull() {
-        ArticleCartRequest article = new ArticleCartRequest(ConstantsDomain.NUMBER_1, null
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
-
         Assertions.assertThrows(PaginationNotAllowedException.class, () -> {
-            cartUseCase.getCart(article);
+            cartUseCase.getCart(ConstantsDomain.NUMBER_1, null
+                    ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         });
 
         String userName = ConstantsDomain.EMAIL;
@@ -259,18 +252,13 @@ class CartUseCaseTest {
                 .findAllCartByUserName(userName);
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
                 .getUserName();
-        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
     }
 
     @Test
     void testGetCartSizeNegative() {
-        ArticleCartRequest article = new ArticleCartRequest(ConstantsDomain.NUMBER_1, -ConstantsDomain.NUMBER_1
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
-
         Assertions.assertThrows(PaginationNotAllowedException.class, () -> {
-            cartUseCase.getCart(article);
+            cartUseCase.getCart(ConstantsDomain.NUMBER_1, -ConstantsDomain.NUMBER_1
+                    ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         });
 
         String userName = ConstantsDomain.EMAIL;
@@ -280,17 +268,15 @@ class CartUseCaseTest {
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
                 .getUserName();
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
+                .getArticleDetails(ConstantsDomain.NUMBER_1, -ConstantsDomain.NUMBER_1
+                        ,true,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
     }
 
     @Test
     void testGetCartPageNegative() {
-        ArticleCartRequest article = new ArticleCartRequest(-ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_1
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
-
         Assertions.assertThrows(PaginationNotAllowedException.class, () -> {
-            cartUseCase.getCart(article);
+            cartUseCase.getCart(-ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_1
+                    ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         });
 
         String userName = ConstantsDomain.EMAIL;
@@ -300,27 +286,29 @@ class CartUseCaseTest {
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
                 .getUserName();
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
+                .getArticleDetails(-ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_1
+                        ,true,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
     }
 
     @Test
     void testGetCartArticleResponseEmpty() {
-        ArticleCartRequest article = new ArticleCartRequest(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         List<CartSave> cartSaveList = new ArrayList<>();
         cartSaveList.add(cartDataBase);
         List<ArticleResponse> articleResponseList = new ArrayList<>();
 
         String userName = ConstantsDomain.EMAIL;
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
 
         Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
         Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
-        Mockito.when(cartStockPersistencePort.getArticleDetails(Mockito.
-                any(ArticleCartRequest.class))).thenReturn(articleResponseList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
+                .thenReturn(articleResponseList);
 
         Assertions.assertThrows(NoDataFoundException.class, () -> {
-            cartUseCase.getCart(article);
+            cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                    ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
         });
 
         Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
@@ -328,14 +316,12 @@ class CartUseCaseTest {
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
                 .getUserName();
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
+                .getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                        ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
     }
 
     @Test
     void testGetCartQuantityNotAvailable() {
-        ArticleCartRequest article = new ArticleCartRequest(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
-                ,true
-                ,new ArrayList<>(), ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
 
         List<CartSave> cartSaveList = new ArrayList<>();
         cartSaveList.add(cartDataBase);
@@ -349,20 +335,25 @@ class CartUseCaseTest {
         articleResponseList.add(articleRes);
 
         String userName = ConstantsDomain.EMAIL;
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
 
         Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
         Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
         Mockito.when(cartPersistencePort.getNextDate()).thenReturn(LocalDate.now());
-        Mockito.when(cartStockPersistencePort.getArticleDetails(Mockito.
-                any(ArticleCartRequest.class))).thenReturn(articleResponseList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                ,true, ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
+                .thenReturn(articleResponseList);
 
-        cartUseCase.getCart(article);
+        cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
 
         Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
                 .findAllCartByUserName(userName);
         Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
                 .getUserName();
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
-                .getArticleDetails(Mockito.any(ArticleCartRequest.class));
+                .getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                        ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
     }
 }

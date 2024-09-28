@@ -9,12 +9,13 @@ class CartDetailTest {
 
     @Test
     void shouldCreateCartDetailConstructor() {
-        CartDetail cart = new CartDetail(ConstantsDomain.FIELD_NAME, ConstantsDomain.NUMBER_2
+        CartDetail cart = new CartDetail(ConstantsDomain.FIELD_NAME, ConstantsDomain.NUMBER_2,ConstantsDomain.NUMBER_2
                 ,ConstantsDomain.PRICE,ConstantsDomain.PRICE,ConstantsDomain.FIELD_NAME);
 
         assertNotNull(cart);
         assertEquals(ConstantsDomain.FIELD_NAME, cart.getName());
-        assertEquals(ConstantsDomain.NUMBER_2, cart.getQuantity());
+        assertEquals(ConstantsDomain.NUMBER_2, cart.getQuantityRequest());
+        assertEquals(ConstantsDomain.NUMBER_2, cart.getQuantityAvailable());
         assertEquals(ConstantsDomain.PRICE, cart.getUnitPrice());
         assertEquals(ConstantsDomain.PRICE, cart.getSubPrice());
         assertEquals(ConstantsDomain.FIELD_NAME, cart.getMessage());
@@ -25,7 +26,8 @@ class CartDetailTest {
         CartDetail cart = new CartDetail();
 
         cart.setName(ConstantsDomain.FIELD_NAME);
-        cart.setQuantity(ConstantsDomain.NUMBER_2);
+        cart.setQuantityRequest(ConstantsDomain.NUMBER_2);
+        cart.setQuantityAvailable(ConstantsDomain.NUMBER_2);
         cart.setUnitPrice(ConstantsDomain.PRICE);
         cart.setSubPrice(ConstantsDomain.PRICE);
         cart.setMessage(ConstantsDomain.FIELD_NAME);
@@ -33,7 +35,8 @@ class CartDetailTest {
 
         assertNotNull(cart);
         assertEquals(ConstantsDomain.FIELD_NAME, cart.getName());
-        assertEquals(ConstantsDomain.NUMBER_2, cart.getQuantity());
+        assertEquals(ConstantsDomain.NUMBER_2, cart.getQuantityRequest());
+        assertEquals(ConstantsDomain.NUMBER_2, cart.getQuantityAvailable());
         assertEquals(ConstantsDomain.PRICE, cart.getUnitPrice());
         assertEquals(ConstantsDomain.PRICE, cart.getSubPrice());
         assertEquals(ConstantsDomain.FIELD_NAME, cart.getMessage());

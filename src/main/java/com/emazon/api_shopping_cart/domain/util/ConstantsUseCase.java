@@ -9,6 +9,7 @@ public class ConstantsUseCase {
     public static final Integer ADD_ONE = 1;
     public static final Integer MAX_NUM_CATEGORY = 3;
     public static final String ARTICLE_NOT_EXIST = "The product is not in the cart";
+    public static final String COMA = ",";
 
     private ConstantsUseCase() {
 
