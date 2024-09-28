@@ -6,9 +6,11 @@ import lombok.Data;
 public class CartDetailDto {
 
         private String name;
-        private Integer quantity;
+        private Integer quantityRequest;
+        private Integer quantityAvailable;
         private double unitPrice;
         private double subPrice;
         private String message;
+
 
 }
