@@ -2,6 +2,7 @@ package com.emazon.api_shopping_cart.domain.usecase;
 
 import com.emazon.api_shopping_cart.domain.exception.*;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
+import com.emazon.api_shopping_cart.domain.model.stock.ArticlePriceResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
 import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
@@ -57,7 +58,7 @@ class CartUseCaseTest {
     }
 
     @Test
-    void testCartSaveNewArticle() {
+    void testCartSave() {
         Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(ConstantsDomain.EMAIL);
         Mockito.when(cartStockPersistencePort.existArticleById(cartRequest.getIdArticle()))
                 .thenReturn(articleResponse);
@@ -205,12 +206,19 @@ class CartUseCaseTest {
         String userName = ConstantsDomain.EMAIL;
         List<Integer> ids = new ArrayList<>();
         ids.add(ConstantsDomain.ID_ARTICLE);
+        ArticlePriceResponse articlePriceResponses = new
+                ArticlePriceResponse(ConstantsDomain.NUMBER_1,ConstantsDomain.PRICE,
+                ConstantsDomain.NUMBER_1);
+        List<ArticlePriceResponse> articlePriceResponsesList = new ArrayList<>();
+        articlePriceResponsesList.add(articlePriceResponses);
 
         Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
         Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
         Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
                 ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
                 .thenReturn(articleResponseList);
+        Mockito.when(cartStockPersistencePort.getPriceByIds(ids))
+                .thenReturn(articlePriceResponsesList);
 
         cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
                 ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
@@ -291,6 +299,42 @@ class CartUseCaseTest {
     }
 
     @Test
+    void testGetCartArticleResponseNull() {
+        List<CartSave> cartSaveList = new ArrayList<>();
+        cartSaveList.add(cartDataBase);
+
+        String userName = ConstantsDomain.EMAIL;
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
+        ArticlePriceResponse articlePriceResponse = new ArticlePriceResponse(ConstantsDomain.NUMBER_1,ConstantsDomain.PRICE,
+                ConstantsDomain.NUMBER_1);
+        List<ArticlePriceResponse> articlePriceResponsesList = new ArrayList<>();
+        articlePriceResponsesList.add(articlePriceResponse);
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
+                .thenReturn(null);
+        Mockito.when(cartStockPersistencePort.getPriceByIds(ids))
+                .thenReturn(articlePriceResponsesList);
+
+        Assertions.assertThrows(NoDataFoundException.class, () -> {
+            cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                    ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
+        });
+
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+        Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getUserName();
+        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
+                        ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
+    }
+
+
+    @Test
     void testGetCartArticleResponseEmpty() {
         List<CartSave> cartSaveList = new ArrayList<>();
         cartSaveList.add(cartDataBase);
@@ -299,12 +343,18 @@ class CartUseCaseTest {
         String userName = ConstantsDomain.EMAIL;
         List<Integer> ids = new ArrayList<>();
         ids.add(ConstantsDomain.ID_ARTICLE);
+        ArticlePriceResponse articlePriceResponse = new ArticlePriceResponse(ConstantsDomain.NUMBER_1,ConstantsDomain.PRICE,
+                ConstantsDomain.NUMBER_1);
+        List<ArticlePriceResponse> articlePriceResponsesList = new ArrayList<>();
+        articlePriceResponsesList.add(articlePriceResponse);
 
         Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
         Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
         Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
-                ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
+                        ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
                 .thenReturn(articleResponseList);
+        Mockito.when(cartStockPersistencePort.getPriceByIds(ids))
+                .thenReturn(articlePriceResponsesList);
 
         Assertions.assertThrows(NoDataFoundException.class, () -> {
             cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
@@ -344,6 +394,8 @@ class CartUseCaseTest {
         Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
                 ,true, ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME))
                 .thenReturn(articleResponseList);
+        Mockito.when(cartStockPersistencePort.getPriceByIds(ids))
+                .thenReturn(null);
 
         cartUseCase.getCart(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
                 ,true, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);

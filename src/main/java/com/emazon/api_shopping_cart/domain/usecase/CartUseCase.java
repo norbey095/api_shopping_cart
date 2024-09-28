@@ -156,7 +156,7 @@ public class CartUseCase implements ICartServicePort {
     }
 
     private void validateData(List<ArticleResponse> articleResponseList){
-        if (articleResponseList.isEmpty()) {
+        if (articleResponseList == null || articleResponseList.isEmpty()) {
             throw new NoDataFoundException();
         }
     }
@@ -165,7 +165,6 @@ public class CartUseCase implements ICartServicePort {
                                               List<Integer> ids){
         CartDetailResponse cartDetailResponse = new CartDetailResponse();
         List<CartDetail> cartDetailsList = new ArrayList<>();
-
         for(ArticleResponse article: articleResponseList){
             CartDetail cartDetail = new CartDetail();
             Integer quantity = getQuantityFromItem(myCart,article.getId());
@@ -182,6 +181,7 @@ public class CartUseCase implements ICartServicePort {
 
             cartDetailsList.add(cartDetail);
         }
+
         cartDetailResponse.setCartDetail(cartDetailsList);
 
         double totalPrice = getTotalPrice(ids,myCart);
@@ -201,12 +201,12 @@ public class CartUseCase implements ICartServicePort {
         double totalPrice = ConstantsUseCase.NUMBER_0;
         List<ArticlePriceResponse> articlePriceResponses = cartStockPersistencePort
                 .getPriceByIds(ids);
-
-        for(ArticlePriceResponse article: articlePriceResponses){
-            Integer quantity = getQuantityFromItem(myCart,article.getId());
-            totalPrice += quantity * article.getPrice();
+        if(articlePriceResponses != null){
+            for(ArticlePriceResponse article: articlePriceResponses){
+                Integer quantity = getQuantityFromItem(myCart,article.getId());
+                totalPrice += quantity * article.getPrice();
+            }
         }
-
         return totalPrice;
     }
 

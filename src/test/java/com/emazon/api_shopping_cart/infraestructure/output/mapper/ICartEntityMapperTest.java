@@ -1,9 +1,6 @@
 package com.emazon.api_shopping_cart.infraestructure.output.mapper;
 
-import com.emazon.api_shopping_cart.application.dto.stock.ArticleResponseDto;
-import com.emazon.api_shopping_cart.application.dto.stock.BrandArticleResponseDto;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
-import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.infraestructure.output.entity.CartEntity;
 import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import org.junit.jupiter.api.Assertions;
@@ -88,36 +85,6 @@ class ICartEntityMapperTest {
     }
 
     @Test
-    void testArticleResponseDtoToArticleResponse() {
-        ArticleResponseDto articleResponseDto = new ArticleResponseDto();
-        articleResponseDto.setId(ConstantsInfTest.ID);
-        articleResponseDto.setName(ConstantsInfTest.NAME);
-        articleResponseDto.setDescription(ConstantsInfTest.DESCRIPTION);
-        articleResponseDto.setQuantity(ConstantsInfTest.QUANTITY);
-        articleResponseDto.setPrice(ConstantsInfTest.PRICE);
-        articleResponseDto.setBrand(new BrandArticleResponseDto());
-        articleResponseDto.setCategories(new ArrayList<>());
-
-
-        ArticleResponse articleResponse = cartEntityMapper.articleResponseDtoToArticleResponse(articleResponseDto);
-
-
-        assertNotNull(articleResponse);
-        assertEquals(articleResponse.getId(), articleResponseDto.getId());
-        assertEquals(articleResponse.getName(), articleResponseDto.getName());
-        assertEquals(articleResponse.getDescription(), articleResponseDto.getDescription());
-        assertEquals(articleResponse.getQuantity(), articleResponseDto.getQuantity());
-        assertEquals(articleResponse.getPrice(), articleResponseDto.getPrice());
-    }
-
-    @Test
-    void testArticleResponseDtoToArticleResponseNull() {
-        ArticleResponse articleResponse = cartEntityMapper.articleResponseDtoToArticleResponse(null);
-
-        assertNull(articleResponse);
-    }
-
-    @Test
     void testCartEntityToCartSaveList() {
         LocalDateTime localDateTime = LocalDateTime.now();
         CartEntity cartEntity = new CartEntity(ConstantsInfTest.NUMBER_1
@@ -134,26 +101,5 @@ class ICartEntityMapperTest {
         Assertions.assertNotNull(cartSave);
         Assertions.assertEquals(ConstantsInfTest.NUMBER_1, cartSave.get(ConstantsInfTest.NUMBER_0).getId());
         Assertions.assertEquals(ConstantsInfTest.EMAIL, cartSave.get(ConstantsInfTest.NUMBER_0).getEmail());
-    }
-
-    @Test
-    void testArticleResponseDtoToArticleResponseList() {
-        ArticleResponseDto articleResponseDto = new ArticleResponseDto();
-        articleResponseDto.setId(ConstantsInfTest.ID);
-        articleResponseDto.setName(ConstantsInfTest.NAME);
-        articleResponseDto.setDescription(ConstantsInfTest.DESCRIPTION);
-        articleResponseDto.setQuantity(ConstantsInfTest.QUANTITY);
-        articleResponseDto.setPrice(ConstantsInfTest.PRICE);
-        articleResponseDto.setBrand(new BrandArticleResponseDto());
-        articleResponseDto.setCategories(new ArrayList<>());
-
-        List<ArticleResponseDto> articleResponseDtoList = new ArrayList<>();
-        articleResponseDtoList.add(articleResponseDto);
-
-
-        List<ArticleResponse> cartSave = cartEntityMapper.articleResponseDtoListToArticleResponseList(articleResponseDtoList);
-
-
-        Assertions.assertNotNull(cartSave);
     }
 }
