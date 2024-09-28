@@ -1,7 +1,6 @@
 package com.emazon.api_shopping_cart.domain.api;
 
 import com.emazon.api_shopping_cart.domain.model.CartSave;
-import com.emazon.api_shopping_cart.domain.model.cartdetail.ArticleCartRequest;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetailResponse;
 
 public interface ICartServicePort {
@@ -10,7 +9,7 @@ public interface ICartServicePort {
 
     void deleteCart(Integer idArticle);
 
-    CartDetailResponse getCart(ArticleCartRequest articleCartRequest);
+    CartDetailResponse getCart(Integer page, Integer size,boolean descending,String categoryName,String brandName);
 
     void buyArticle();
 }

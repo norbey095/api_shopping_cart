@@ -3,9 +3,9 @@ package com.emazon.api_shopping_cart.domain.usecase;
 import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
 import com.emazon.api_shopping_cart.domain.exception.*;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
-import com.emazon.api_shopping_cart.domain.model.cartdetail.ArticleCartRequest;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetail;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetailResponse;
+import com.emazon.api_shopping_cart.domain.model.stock.ArticlePriceResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
 import com.emazon.api_shopping_cart.domain.model.transaction.TransactionRequest;
@@ -47,7 +47,7 @@ public class CartUseCase implements ICartServicePort {
         cartRequest.setEmail(userName);
 
         ArticleResponse articleResponse = validateArticleExists(cartRequest.getIdArticle());
-        validateAvailableQuantity(articleResponse.getQuantity(), cartRequest.getQuantity(),null);
+        validateAvailableQuantityException(articleResponse.getQuantity(), cartRequest.getQuantity(),null);
 
         boolean isUpdate = validateExistenceProductInCart(cartRequest.getEmail(),
                 cartRequest.getIdArticle(), cartRequest.getQuantity());
@@ -72,18 +72,18 @@ public class CartUseCase implements ICartServicePort {
     }
 
     @Override
-    public CartDetailResponse getCart(ArticleCartRequest articleCartRequest) {
-        validatePaginationData(articleCartRequest.getPage(),articleCartRequest.getSize());
+    public CartDetailResponse getCart(Integer page, Integer size,boolean descending,String categoryName,String brandName) {
+        validatePaginationData(page,size);
 
         String userName = authenticationPersistencePort.getUserName();
         List<CartSave> myCart = cartPersistencePort.findAllCartByUserName(userName);
+        List<Integer> ids = getAllArticleIds(myCart);
 
-        articleCartRequest.setArticleIds(getAllArticleIds(myCart));
-
-        List<ArticleResponse> articleResponseList = cartStockPersistencePort.getArticleDetails(articleCartRequest);
+        List<ArticleResponse> articleResponseList = cartStockPersistencePort
+                .getArticleDetails(page,size,descending,ids,categoryName,brandName);
         validateData(articleResponseList);
 
-        return getCartDetails(myCart,articleResponseList);
+        return getCartDetails(myCart,articleResponseList,ids);
     }
 
     @Override
@@ -91,7 +91,9 @@ public class CartUseCase implements ICartServicePort {
         String userName = authenticationPersistencePort.getUserName();
 
         List<CartSave> myCart = cartPersistencePort.findAllCartByUserName(userName);
-        List<ArticleResponse> articleResponseList = getArticleDetails(myCart);
+        List<ArticleResponse> articleResponseList =  cartStockPersistencePort
+                .getArticleDetails(ConstantsUseCase.NUMBER_0,myCart.size(),
+                false,this.getAllArticleIds(myCart),null,null);
         validateData(articleResponseList);
 
         validateQuantity(myCart,articleResponseList);
@@ -104,7 +106,7 @@ public class CartUseCase implements ICartServicePort {
         return cartStockPersistencePort.existArticleById(id);
     }
 
-    private void validateAvailableQuantity(Integer quantityAvailable, Integer quantityRequest,String name) {
+    private void validateAvailableQuantityException(Integer quantityAvailable, Integer quantityRequest,String name) {
         if (quantityAvailable < quantityRequest) {
             LocalDate dateOfNextSupply = cartPersistencePort.getNextDate();
             throw new TheItemIsNotAvailable(ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply +
@@ -176,64 +178,73 @@ public class CartUseCase implements ICartServicePort {
     }
 
     private void validateData(List<ArticleResponse> articleResponseList){
-        if (articleResponseList.isEmpty()) {
+        if (articleResponseList == null || articleResponseList.isEmpty()) {
             throw new NoDataFoundException();
         }
     }
 
-    private CartDetailResponse getCartDetails(List<CartSave> myCart,List<ArticleResponse> articleResponseList){
+    private CartDetailResponse getCartDetails(List<CartSave> myCart,List<ArticleResponse> articleResponseList,
+                                              List<Integer> ids){
         CartDetailResponse cartDetailResponse = new CartDetailResponse();
         List<CartDetail> cartDetailsList = new ArrayList<>();
-        double totalPrice = 0;
-
         for(ArticleResponse article: articleResponseList){
             CartDetail cartDetail = new CartDetail();
-            CartSave cartSave = getItemFromCart(myCart,article.getId());
+            Integer quantity = getQuantityFromItem(myCart,article.getId());
 
             cartDetail.setName(article.getName());
             cartDetail.setUnitPrice(article.getPrice());
 
-            validateAvailableQuantityMessages(article.getQuantity(),cartSave.getQuantity(),cartDetail);
+            validateAvailableQuantity(article.getQuantity(),quantity,cartDetail);
+            cartDetail.setQuantityRequest(quantity);
+            cartDetail.setQuantityAvailable(article.getQuantity());
 
-            double subtotal = article.getPrice()*cartSave.getQuantity();
+            double subtotal = article.getPrice()*quantity;
             cartDetail.setSubPrice(subtotal);
 
-            totalPrice += subtotal;
             cartDetailsList.add(cartDetail);
         }
+
         cartDetailResponse.setCartDetail(cartDetailsList);
+
+        double totalPrice = getTotalPrice(ids,myCart);
         cartDetailResponse.setTotalPrice(totalPrice);
         return cartDetailResponse;
     }
 
-    private CartSave getItemFromCart(List<CartSave> myCart,Integer id){
+    private Integer getQuantityFromItem(List<CartSave> myCart,Integer id){
         return myCart.stream()
                 .filter(cart -> cart.getIdArticle().equals(id))
+                .map(CartSave::getQuantity)
                 .findFirst()
                 .orElse(null);
     }
 
-    private void validateAvailableQuantityMessages(Integer quantityAvailable,Integer quantityRequest,CartDetail cartDetail){
+    private double getTotalPrice(List<Integer> ids,List<CartSave> myCart){
+        double totalPrice = ConstantsUseCase.NUMBER_0;
+        List<ArticlePriceResponse> articlePriceResponses = cartStockPersistencePort
+                .getPriceByIds(ids);
+        if(articlePriceResponses != null){
+            for(ArticlePriceResponse article: articlePriceResponses){
+                Integer quantity = getQuantityFromItem(myCart,article.getId());
+                totalPrice += quantity * article.getPrice();
+            }
+        }
+        return totalPrice;
+    }
+
+
+    private void validateAvailableQuantity(Integer quantityAvailable,Integer quantityRequest,CartDetail cartDetail) {
         if (quantityAvailable < quantityRequest) {
             LocalDate dateOfNextSupply = cartPersistencePort.getNextDate();
             cartDetail.setMessage(ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply);
         }
-        cartDetail.setQuantity(quantityRequest);
-    }
-
-    private List<ArticleResponse> getArticleDetails(List<CartSave> myCart){
-        ArticleCartRequest articleCartRequest = new ArticleCartRequest();
-        articleCartRequest.setPage(ConstantsUseCase.NUMBER_0);
-        articleCartRequest.setSize(myCart.size());
-        articleCartRequest.setArticleIds(this.getAllArticleIds(myCart));
-        return cartStockPersistencePort.getArticleDetails(articleCartRequest);
     }
 
 
     private void validateQuantity(List<CartSave> myCart,List<ArticleResponse> articleResponseList){
         for(ArticleResponse article: articleResponseList){
-            CartSave cartSave = getItemFromCart(myCart,article.getId());
-            validateAvailableQuantity(article.getQuantity(),cartSave.getQuantity(),article.getName());
+            Integer quantity = getQuantityFromItem(myCart,article.getId());
+            validateAvailableQuantityException(article.getQuantity(),quantity,article.getName());
         }
     }
 

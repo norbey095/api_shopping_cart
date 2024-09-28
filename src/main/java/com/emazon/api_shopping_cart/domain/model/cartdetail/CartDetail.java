@@ -4,7 +4,8 @@ package com.emazon.api_shopping_cart.domain.model.cartdetail;
 public class CartDetail {
 
         private String name;
-        private Integer quantity;
+        private Integer quantityRequest;
+        private Integer quantityAvailable;
         private double unitPrice;
         private double subPrice;
         private String message;
@@ -12,9 +13,11 @@ public class CartDetail {
         public CartDetail() {
         }
 
-        public CartDetail(String name, Integer quantity, double unitPrice, double subPrice, String message) {
+        public CartDetail(String name, Integer quantityRequest, Integer quantityAvailable, double unitPrice,
+                          double subPrice, String message) {
                 this.name = name;
-                this.quantity = quantity;
+                this.quantityRequest = quantityRequest;
+                this.quantityAvailable = quantityAvailable;
                 this.unitPrice = unitPrice;
                 this.subPrice = subPrice;
                 this.message = message;
@@ -28,12 +31,20 @@ public class CartDetail {
                 this.name = name;
         }
 
-        public Integer getQuantity() {
-                return quantity;
+        public Integer getQuantityRequest() {
+                return quantityRequest;
         }
 
-        public void setQuantity(Integer quantity) {
-                this.quantity = quantity;
+        public void setQuantityRequest(Integer quantityRequest) {
+                this.quantityRequest = quantityRequest;
+        }
+
+        public Integer getQuantityAvailable() {
+                return quantityAvailable;
+        }
+
+        public void setQuantityAvailable(Integer quantityAvailable) {
+                this.quantityAvailable = quantityAvailable;
         }
 
         public double getUnitPrice() {

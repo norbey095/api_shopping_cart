@@ -11,6 +11,7 @@ public class ConstantsUseCase {
     public static final String ARTICLE_NOT_EXIST = "The product is not in the cart";
     public static final String ARTICLE = "Articulo: ";
     public static final String COMILLAS = "";
+    public static final String COMA = ",";
 
     private ConstantsUseCase() {
 

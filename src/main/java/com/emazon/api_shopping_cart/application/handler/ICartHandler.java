@@ -2,7 +2,6 @@ package com.emazon.api_shopping_cart.application.handler;
 
 import com.emazon.api_shopping_cart.application.dto.cart.CartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cart.ResponseSuccess;
-import com.emazon.api_shopping_cart.application.dto.cartdetail.ArticleCartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cartdetail.CartDetailResponseDto;
 
 public interface ICartHandler {
@@ -11,7 +10,7 @@ public interface ICartHandler {
 
     ResponseSuccess deleteArticle(Integer idArticle);
 
-    CartDetailResponseDto getCart(ArticleCartRequestDto articleCartRequestDto);
-
     ResponseSuccess buyCart();
+
+    CartDetailResponseDto getCart(Integer page, Integer size,boolean descending,String categoryName,String brandName);
 }

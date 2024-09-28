@@ -1,12 +1,12 @@
 package com.emazon.api_shopping_cart.infraestructure.configuration.feign;
 
+import com.emazon.api_shopping_cart.application.dto.stock.ArticlePriceResponseDto;
 import com.emazon.api_shopping_cart.application.dto.stock.ArticleResponseDto;
-import com.emazon.api_shopping_cart.domain.model.cartdetail.ArticleCartRequest;
 import com.emazon.api_shopping_cart.infraestructure.util.ConstantsConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,6 +18,14 @@ public interface IFeignClientStock {
     ArticleResponseDto existById(@PathVariable Integer articleId);
 
     @GetMapping(ConstantsConfig.URL_STOCK_LIST_ARTICLE)
-    List<ArticleResponseDto> getArticleDetails(@RequestBody ArticleCartRequest articleCartRequest);
+    List<ArticleResponseDto> getArticleDetails(@RequestParam Integer page,
+                                               @RequestParam Integer size,
+                                               @RequestParam boolean descending,
+                                               @RequestParam List<Integer> articlesId,
+                                               @RequestParam String categoryName,
+                                               @RequestParam String brandName);
+
+    @GetMapping(ConstantsConfig.URL_STOCK_PRICE)
+    List<ArticlePriceResponseDto> getPriceByIds(@RequestParam List<Integer> articlesIds);
 
 }
