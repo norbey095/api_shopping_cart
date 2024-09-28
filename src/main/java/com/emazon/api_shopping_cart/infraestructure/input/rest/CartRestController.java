@@ -2,9 +2,9 @@ package com.emazon.api_shopping_cart.infraestructure.input.rest;
 
 import com.emazon.api_shopping_cart.application.dto.cart.CartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cart.ResponseSuccess;
-import com.emazon.api_shopping_cart.application.dto.cartdetail.ArticleCartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cartdetail.CartDetailResponseDto;
 import com.emazon.api_shopping_cart.application.handler.ICartHandler;
+import com.emazon.api_shopping_cart.infraestructure.util.ConstantsConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,7 +63,11 @@ public class CartRestController {
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @GetMapping("/")
     public ResponseEntity<CartDetailResponseDto> getCartsByUserName(
-            @RequestBody ArticleCartRequestDto articleCartRequestDto) {
-        return ResponseEntity.ok(cartHandler.getCart(articleCartRequestDto));
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam(required = false, defaultValue = ConstantsConfig.FALSE) boolean descending,
+            @RequestParam(required = false) String categoryName,
+            @RequestParam(required = false) String brandName) {
+        return ResponseEntity.ok(cartHandler.getCart(page,size,descending,categoryName,brandName));
     }
 }

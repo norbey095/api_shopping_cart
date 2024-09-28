@@ -2,7 +2,6 @@ package com.emazon.api_shopping_cart.infraestructure.input.rest;
 
 import com.emazon.api_shopping_cart.application.dto.cart.CartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cart.ResponseSuccess;
-import com.emazon.api_shopping_cart.application.dto.cartdetail.ArticleCartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cartdetail.CartDetailResponseDto;
 import com.emazon.api_shopping_cart.application.handler.ICartHandler;
 import com.emazon.api_shopping_cart.infraestructure.output.util.JwtService;
@@ -66,17 +65,13 @@ class CartRestControllerTest {
     void getCartsByUserName_ShouldReturnStatusOk() throws Exception {
         CartDetailResponseDto cartDetailResponseDto = new CartDetailResponseDto();
 
-        ArticleCartRequestDto articleCartRequestDto = new ArticleCartRequestDto();
-        articleCartRequestDto.setSize(ConstantsInfTest.NUMBER_1);
-        articleCartRequestDto.setPage(ConstantsInfTest.NUMBER_1);
-
-        Mockito.when(cartHandler.getCart(articleCartRequestDto))
+        Mockito.when(cartHandler.getCart(ConstantsInfTest.NUMBER_1,
+                        ConstantsInfTest.NUMBER_1,false,null,null))
                 .thenReturn(cartDetailResponseDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.get(ConstantsInfTest.URL_GET_CART+
-                                ConstantsInfTest.ID_ARTICLE_DELETE + ConstantsInfTest.NUMBER_1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ConstantsInfTest.JSON_REQUEST_GET))
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(ConstantsInfTest.URL_GET_CART+ ConstantsInfTest.PAGE
+                                + ConstantsInfTest.NUMBER_1 + ConstantsInfTest.SIZE + ConstantsInfTest.NUMBER_1))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

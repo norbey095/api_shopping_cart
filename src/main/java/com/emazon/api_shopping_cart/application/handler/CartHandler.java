@@ -2,13 +2,12 @@ package com.emazon.api_shopping_cart.application.handler;
 
 import com.emazon.api_shopping_cart.application.dto.cart.CartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cart.ResponseSuccess;
-import com.emazon.api_shopping_cart.application.dto.cartdetail.ArticleCartRequestDto;
 import com.emazon.api_shopping_cart.application.dto.cartdetail.CartDetailResponseDto;
 import com.emazon.api_shopping_cart.application.mapper.CartMapper;
 import com.emazon.api_shopping_cart.application.util.ConstantsDto;
 import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
-import com.emazon.api_shopping_cart.domain.model.cartdetail.ArticleCartRequest;
+import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetailResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,9 +36,9 @@ public class CartHandler implements ICartHandler {
     }
 
     @Override
-    public CartDetailResponseDto getCart(ArticleCartRequestDto articleCartRequestDto) {
-        ArticleCartRequest articleCartRequest = cartMapper
-                .articleCartRequestDtoToArticleCartRequest(articleCartRequestDto);
-        return cartMapper.cartDetailResponseToCartDetailResponseDto(cartSaveServicePort.getCart(articleCartRequest));
+    public CartDetailResponseDto getCart(Integer page, Integer size,boolean descending,
+                                         String categoryName,String brandName) {
+        CartDetailResponse cartDetailResponse = cartSaveServicePort.getCart(page,size,descending,categoryName,brandName);
+        return cartMapper.cartDetailResponseToCartDetailResponseDto(cartDetailResponse);
     }
 }
