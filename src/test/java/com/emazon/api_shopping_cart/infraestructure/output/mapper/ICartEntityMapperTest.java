@@ -151,7 +151,7 @@ class ICartEntityMapperTest {
         articleResponseDtoList.add(articleResponseDto);
 
 
-        List<ArticleResponse> cartSave = cartEntityMapper.articleResponseDtoToArticleResponseList(articleResponseDtoList);
+        List<ArticleResponse> cartSave = cartEntityMapper.articleResponseDtoListToArticleResponseList(articleResponseDtoList);
 
 
         Assertions.assertNotNull(cartSave);

@@ -15,6 +15,8 @@ public class ConstantsConfig {
     public static final String URL_TRANSACTION_PORT = "http://localhost:9092";
     public static final String TRANSACTION = "transaction";
     public static final String URL_TRANSACTION_ARTICLEID = "/supply/{articleId}";
+    public static final String FALSE = "false";
+    public static final String URL_STOCK_PRICE = "/stock/article/getPriceByIds";
 
 
     private ConstantsConfig() {

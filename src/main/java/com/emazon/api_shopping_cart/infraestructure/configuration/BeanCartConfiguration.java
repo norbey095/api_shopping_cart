@@ -10,6 +10,7 @@ import com.emazon.api_shopping_cart.infraestructure.output.adapter.Authenticatio
 import com.emazon.api_shopping_cart.infraestructure.output.adapter.CartJpaAdapter;
 import com.emazon.api_shopping_cart.infraestructure.output.adapter.CartStockAdapter;
 import com.emazon.api_shopping_cart.infraestructure.output.mapper.ICartEntityMapper;
+import com.emazon.api_shopping_cart.infraestructure.output.mapper.ICartStockMapper;
 import com.emazon.api_shopping_cart.infraestructure.output.repository.ICartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,8 +35,8 @@ public class BeanCartConfiguration {
 
     @Bean
     public ICartStockPersistencePort cartStockPersistencePort(IFeignClientStock feignClientStock,
-                                                              ICartEntityMapper cartEntityMapper) {
-        return new CartStockAdapter(feignClientStock,cartEntityMapper);
+                                                              ICartStockMapper cartStockMapper) {
+        return new CartStockAdapter(feignClientStock,cartStockMapper);
     }
 
     @Bean
