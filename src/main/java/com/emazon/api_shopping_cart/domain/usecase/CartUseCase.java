@@ -47,7 +47,8 @@ public class CartUseCase implements ICartServicePort {
         cartRequest.setEmail(userName);
 
         ArticleResponse articleResponse = validateArticleExists(cartRequest.getIdArticle());
-        validateAvailableQuantityException(articleResponse.getQuantity(), cartRequest.getQuantity(),null);
+        validateAvailableQuantityException(articleResponse.getQuantity(), cartRequest.getQuantity(),
+                articleResponse.getName());
 
         boolean isUpdate = validateExistenceProductInCart(cartRequest.getEmail(),
                 cartRequest.getIdArticle(), cartRequest.getQuantity());
@@ -88,18 +89,24 @@ public class CartUseCase implements ICartServicePort {
 
     @Override
     public void buyArticle() {
+        LocalDateTime localDateTime = LocalDateTime.now();
         String userName = authenticationPersistencePort.getUserName();
+        try {
+            List<CartSave> myCart = cartPersistencePort.findAllCartByUserName(userName);
+            List<ArticleResponse> articleResponseList =  cartStockPersistencePort
+                    .getArticleDetails(ConstantsUseCase.NUMBER_0,myCart.size(),
+                            false,this.getAllArticleIds(myCart),null,null);
+            validateData(articleResponseList);
 
-        List<CartSave> myCart = cartPersistencePort.findAllCartByUserName(userName);
-        List<ArticleResponse> articleResponseList =  cartStockPersistencePort
-                .getArticleDetails(ConstantsUseCase.NUMBER_0,myCart.size(),
-                false,this.getAllArticleIds(myCart),null,null);
-        validateData(articleResponseList);
+            validateQuantity(myCart,articleResponseList);
 
-        validateQuantity(myCart,articleResponseList);
-
-        saveSaleInTransaction(myCart);
-        cartPersistencePort.deleteCart(userName);
+            saveSaleInTransaction(myCart,localDateTime);
+            cartPersistencePort.deleteCart(userName);
+        } catch (TheItemIsNotAvailable e){
+            throw new TheItemIsNotAvailable(e.getMessage());
+        } catch (Exception e){
+            cartTransactionPersistencePort.returnRecord(userName,localDateTime);
+        }
     }
 
     private ArticleResponse validateArticleExists(Integer id) {
@@ -109,8 +116,9 @@ public class CartUseCase implements ICartServicePort {
     private void validateAvailableQuantityException(Integer quantityAvailable, Integer quantityRequest,String name) {
         if (quantityAvailable < quantityRequest) {
             LocalDate dateOfNextSupply = cartPersistencePort.getNextDate();
-            throw new TheItemIsNotAvailable(ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply +
-                    (name != null ? ConstantsUseCase.ARTICLE + name : ConstantsUseCase.COMILLAS));
+            throw new TheItemIsNotAvailable( (name != null ?
+                    ConstantsUseCase.ARTICLE + name : ConstantsUseCase.COMILLAS) +
+                    ConstantsUseCase.SPACE +ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply);
         }
     }
 
@@ -248,17 +256,21 @@ public class CartUseCase implements ICartServicePort {
         }
     }
 
-    private void saveSaleInTransaction(List<CartSave> myCart){
-        LocalDateTime localDateTime = LocalDateTime.now();
+    private void saveSaleInTransaction(List<CartSave> myCart,LocalDateTime localDateTime){
+        cartTransactionPersistencePort.saveBuy(getTransactionRequestList(myCart,localDateTime));
+    }
+
+    private List<TransactionRequest> getTransactionRequestList(List<CartSave> myCart,LocalDateTime localDateTime){
+        List<TransactionRequest> transactionRequestList = new ArrayList<>();
         for(CartSave cart: myCart){
             TransactionRequest transactionRequest = new TransactionRequest();
-            transactionRequest.setIdArticle(cart.getIdArticle());
+            transactionRequest.setArticleId(cart.getIdArticle());
             transactionRequest.setQuantity(cart.getQuantity());
             transactionRequest.setEmail(cart.getEmail());
             transactionRequest.setBuyDate(localDateTime);
-            cartTransactionPersistencePort.saveBuy(transactionRequest);
+            transactionRequestList.add(transactionRequest);
         }
-
+        return transactionRequestList;
     }
 
 }

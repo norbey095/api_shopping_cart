@@ -7,17 +7,17 @@ public class TransactionRequest {
     private Integer id;
     private String  email;
     private LocalDateTime buyDate;
-    private Integer idArticle;
+    private Integer articleId;
     private Integer quantity;
 
     public TransactionRequest() {
     }
 
-    public TransactionRequest(Integer id, String email, LocalDateTime buyDate, Integer idArticle, Integer quantity) {
+    public TransactionRequest(Integer id, String email, LocalDateTime buyDate, Integer articleId, Integer quantity) {
         this.id = id;
         this.email = email;
         this.buyDate = buyDate;
-        this.idArticle = idArticle;
+        this.articleId = articleId;
         this.quantity = quantity;
     }
 
@@ -45,12 +45,12 @@ public class TransactionRequest {
         this.buyDate = buyDate;
     }
 
-    public Integer getIdArticle() {
-        return idArticle;
+    public Integer getArticleId() {
+        return articleId;
     }
 
-    public void setIdArticle(Integer idArticle) {
-        this.idArticle = idArticle;
+    public void setArticleId(Integer articleId) {
+        this.articleId = articleId;
     }
 
     public Integer getQuantity() {

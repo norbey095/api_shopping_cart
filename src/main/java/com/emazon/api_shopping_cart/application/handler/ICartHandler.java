@@ -10,7 +10,7 @@ public interface ICartHandler {
 
     ResponseSuccess deleteArticle(Integer idArticle);
 
-    ResponseSuccess buyCart();
-
     CartDetailResponseDto getCart(Integer page, Integer size,boolean descending,String categoryName,String brandName);
+
+    ResponseSuccess buyCart();
 }

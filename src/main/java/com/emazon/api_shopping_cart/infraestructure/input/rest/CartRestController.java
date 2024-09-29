@@ -71,6 +71,15 @@ public class CartRestController {
         return ResponseEntity.ok(cartHandler.getCart(page,size,descending,categoryName,brandName));
     }
 
+    @Operation(summary = "Buy articles",
+            description = "Buy articles")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No data found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "503", description = "Service Unavailable", content = @Content)
+    })
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping("/buy")
     public ResponseEntity<ResponseSuccess> buyArticle(){
