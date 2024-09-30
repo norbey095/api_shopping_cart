@@ -8,6 +8,7 @@ import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
 import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
 import com.emazon.api_shopping_cart.domain.spi.ICartPersistencePort;
 import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
+import com.emazon.api_shopping_cart.domain.spi.ICartTransactionPersistencePort;
 import com.emazon.api_shopping_cart.domain.util.ConstantsDomain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,10 @@ class CartUseCaseTest {
 
     @Mock
     private ICartStockPersistencePort cartStockPersistencePort;
+
+
+    @Mock
+    private ICartTransactionPersistencePort cartTransactionPersistencePort;
 
     @InjectMocks
     private CartUseCase cartUseCase;
@@ -407,5 +412,176 @@ class CartUseCaseTest {
         Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
                 .getArticleDetails(ConstantsDomain.NUMBER_1, ConstantsDomain.NUMBER_0
                         ,true,ids, ConstantsDomain.FIELD_NAME, ConstantsDomain.FIELD_NAME);
+    }
+
+    @Test
+    void testBuyArticle() {
+        List<CartSave> cartSaveList = new ArrayList<>();
+        cartSaveList.add(cartDataBase);
+
+        List<ArticleResponse> articleResponseList = new ArrayList<>();
+        articleResponseList.add(articleResponse);
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
+
+        String userName = ConstantsDomain.EMAIL;
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null)).thenReturn(articleResponseList);
+
+        cartUseCase.buyArticle();
+
+        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null);
+        Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getUserName();
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+    }
+
+    @Test
+    void testBuyArticleWithArticleNotAvailable() {
+        List<CartSave> cartSaveList = new ArrayList<>();
+        cartSaveList.add(cartDataBase);
+
+        ArticleResponse cartDataB = new ArticleResponse();
+        cartDataB.setId(ConstantsDomain.ID_ARTICLE);
+        cartDataB.setQuantity(ConstantsDomain.NUMBER_0);
+
+        List<ArticleResponse> articleResponseList = new ArrayList<>();
+        articleResponseList.add(cartDataB);
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
+
+        String userName = ConstantsDomain.EMAIL;
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null))
+                .thenReturn(articleResponseList);
+
+
+        Assertions.assertThrows(TheItemIsNotAvailable.class, () -> {
+            cartUseCase.buyArticle();
+        });
+
+
+        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null);
+        Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getUserName();
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
+                .deleteCart(userName);
+    }
+
+    @Test
+    void testBuyArticleWithArticleNotAvailableWithName() {
+        List<CartSave> cartSaveList = new ArrayList<>();
+        cartSaveList.add(cartDataBase);
+
+        ArticleResponse cartDataB = new ArticleResponse();
+        cartDataB.setId(ConstantsDomain.ID_ARTICLE);
+        cartDataB.setQuantity(ConstantsDomain.NUMBER_0);
+        cartDataB.setName(ConstantsDomain.FIELD_NAME);
+
+        List<ArticleResponse> articleResponseList = new ArrayList<>();
+        articleResponseList.add(cartDataB);
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
+
+        String userName = ConstantsDomain.EMAIL;
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null))
+                .thenReturn(articleResponseList);
+
+
+        Assertions.assertThrows(TheItemIsNotAvailable.class, () -> {
+            cartUseCase.buyArticle();
+        });
+
+
+        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null);
+        Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getUserName();
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
+                .deleteCart(userName);
+    }
+
+    @Test
+    void testBuyArticleWithException() {
+        List<CartSave> cartSaveList = new ArrayList<>();
+        cartSaveList.add(cartDataBase);
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
+
+        String userName = ConstantsDomain.EMAIL;
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
+        Mockito.doThrow(new IllegalArgumentException()).when(cartStockPersistencePort)
+                .getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null);
+
+
+        Assertions.assertThrows(PurchaseFailureException.class, () -> {
+            cartUseCase.buyArticle();
+        });
+
+
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null);
+        Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getUserName();
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_0))
+                .deleteCart(userName);
+    }
+
+    @Test
+    void testBuyArticleNoDataFoundException () {
+        List<CartSave> cartSaveList = new ArrayList<>();
+        cartSaveList.add(cartDataBase);
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(ConstantsDomain.ID_ARTICLE);
+
+        String userName = ConstantsDomain.EMAIL;
+
+        Mockito.when(authenticationPersistencePort.getUserName()).thenReturn(userName);
+        Mockito.when(cartPersistencePort.findAllCartByUserName(userName)).thenReturn(cartSaveList);
+        Mockito.when(cartStockPersistencePort.getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                ,false,ids, null, null)).thenReturn(new ArrayList<>());
+
+        Assertions.assertThrows(NoDataFoundException.class, () -> {
+            cartUseCase.buyArticle();
+        });
+
+        Mockito.verify(authenticationPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getUserName();
+        Mockito.verify(cartPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .findAllCartByUserName(userName);
+        Mockito.verify(cartStockPersistencePort, Mockito.times(ConstantsDomain.NUMBER_1))
+                .getArticleDetails(ConstantsDomain.NUMBER_0, ConstantsDomain.NUMBER_1
+                        ,false,ids, null, null);
     }
 }

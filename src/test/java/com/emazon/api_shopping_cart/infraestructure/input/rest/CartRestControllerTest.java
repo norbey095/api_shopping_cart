@@ -74,4 +74,18 @@ class CartRestControllerTest {
                                 + ConstantsInfTest.NUMBER_1 + ConstantsInfTest.SIZE + ConstantsInfTest.NUMBER_1))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
+
+
+    @Test
+    @WithMockUser(username = ConstantsInfTest.USER_NAME, roles = {ConstantsInfTest.CLIENT})
+    void buyArticle_ShouldReturnStatusCreated() throws Exception {
+        ResponseSuccess responseSuccess = new ResponseSuccess(ConstantsInfTest.MESSAGESS_SUCCESS
+                , HttpStatus.OK.toString());
+        Mockito.when(cartHandler.buyCart())
+                .thenReturn(responseSuccess);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(ConstantsInfTest.URL_BUY_CART)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
 }

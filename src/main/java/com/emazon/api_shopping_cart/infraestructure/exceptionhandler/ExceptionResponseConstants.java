@@ -9,7 +9,8 @@ public enum ExceptionResponseConstants {
     INCORRECT_DATA("Incorrect login information"),
     ACCESS_DENE("Access denied"),
     NO_DATA_FOUND_EXCEPTION_MESSAGE("No data found in the database"),
-    NEGATIVE_NOT_ALLOWED("The page and size fields cannot be negative or null.");
+    NEGATIVE_NOT_ALLOWED("The page and size fields cannot be negative or null."),
+    PURCHASE_FAILURE("The purchase could not be completed, please try again later.");
 
 
     private final String message;

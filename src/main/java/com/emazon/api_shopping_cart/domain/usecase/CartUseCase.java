@@ -104,8 +104,11 @@ public class CartUseCase implements ICartServicePort {
             cartPersistencePort.deleteCart(userName);
         } catch (TheItemIsNotAvailable e){
             throw new TheItemIsNotAvailable(e.getMessage());
+        } catch (NoDataFoundException e){
+            throw new NoDataFoundException();
         } catch (Exception e){
             cartTransactionPersistencePort.returnRecord(userName,localDateTime);
+            throw new PurchaseFailureException();
         }
     }
 
