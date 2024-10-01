@@ -1,6 +1,5 @@
-package com.emazon.api_shopping_cart.domain.model;
+package com.emazon.api_shopping_cart.domain.model.stock;
 
-import com.emazon.api_shopping_cart.domain.model.stock.BrandArticleResponse;
 import com.emazon.api_shopping_cart.domain.util.ConstantsDomain;
 import org.junit.jupiter.api.Test;
 

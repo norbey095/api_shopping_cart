@@ -5,10 +5,7 @@ import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticlePriceResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
-import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartTransactionPersistencePort;
+import com.emazon.api_shopping_cart.domain.spi.*;
 import com.emazon.api_shopping_cart.domain.util.ConstantsDomain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +33,9 @@ class CartUseCaseTest {
 
     @Mock
     private ICartTransactionPersistencePort cartTransactionPersistencePort;
+
+    @Mock
+    private ICartReportPersistencePort cartReportPersistencePort;
 
     @InjectMocks
     private CartUseCase cartUseCase;
