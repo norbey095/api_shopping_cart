@@ -13,8 +13,12 @@ public class ConstantsConfig {
     public static final String URL_STOCK_LIST_ARTICLE = "/stock/article/getItemsCart";
     public static final Integer SEVEN_LETTERS = 7;
     public static final String URL_TRANSACTION_PORT = "http://localhost:9092";
+    public static final String URL_REPORT_PORT = "http://localhost:9094";
     public static final String TRANSACTION = "transaction";
-    public static final String URL_TRANSACTION_ARTICLEID = "/supply/{articleId}";
+    public static final String REPORT = "report";
+    public static final String URL_TRANSACTION_SALES= "/transaction/sales/";
+    public static final String URL_REPORT_SAVE = "/report/";
+    public static final String URL_DELETE_SALES= "/transaction/sales/{userName}/{buyDate}";
     public static final String FALSE = "false";
     public static final String URL_STOCK_PRICE = "/stock/article/getPriceByIds";
 

@@ -5,12 +5,13 @@ import com.emazon.api_shopping_cart.domain.exception.*;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetail;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetailResponse;
+import com.emazon.api_shopping_cart.domain.model.report.ArticleDetail;
+import com.emazon.api_shopping_cart.domain.model.report.ReportBuy;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticlePriceResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
-import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
+import com.emazon.api_shopping_cart.domain.model.transaction.TransactionRequest;
+import com.emazon.api_shopping_cart.domain.spi.*;
 import com.emazon.api_shopping_cart.domain.util.ConstantsUseCase;
 
 import java.time.LocalDate;
@@ -27,13 +28,19 @@ public class CartUseCase implements ICartServicePort {
     private final ICartPersistencePort cartPersistencePort;
     private final IAthenticationPersistencePort authenticationPersistencePort;
     private final ICartStockPersistencePort cartStockPersistencePort;
+    private final ICartTransactionPersistencePort cartTransactionPersistencePort;
+    private final ICartReportPersistencePort cartReportPersistencePort;
 
     public CartUseCase(ICartPersistencePort cartPersistencePort,
                        ICartStockPersistencePort cartStockPersistencePort,
-                       IAthenticationPersistencePort authenticationPersistencePort) {
+                       IAthenticationPersistencePort authenticationPersistencePort,
+                       ICartTransactionPersistencePort cartTransactionPersistencePort,
+                       ICartReportPersistencePort cartReportPersistencePort) {
         this.cartPersistencePort = cartPersistencePort;
         this.cartStockPersistencePort = cartStockPersistencePort;
         this.authenticationPersistencePort = authenticationPersistencePort;
+        this.cartTransactionPersistencePort = cartTransactionPersistencePort;
+        this.cartReportPersistencePort = cartReportPersistencePort;
     }
 
     @Override
@@ -42,7 +49,8 @@ public class CartUseCase implements ICartServicePort {
         cartRequest.setEmail(userName);
 
         ArticleResponse articleResponse = validateArticleExists(cartRequest.getIdArticle());
-        validateAvailableQuantity(articleResponse.getQuantity(), cartRequest.getQuantity());
+        validateAvailableQuantityException(articleResponse.getQuantity(), cartRequest.getQuantity(),
+                articleResponse.getName());
 
         boolean isUpdate = validateExistenceProductInCart(cartRequest.getEmail(),
                 cartRequest.getIdArticle(), cartRequest.getQuantity());
@@ -60,7 +68,7 @@ public class CartUseCase implements ICartServicePort {
         String userName = authenticationPersistencePort.getUserName();
         validateCartItem(idArticle,userName);
 
-        this.cartPersistencePort.deleteCart(idArticle,userName);
+        this.cartPersistencePort.deleteItemCart(idArticle,userName);
         LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         this.cartPersistencePort.updateProductDateByEmail(userName,date);
@@ -81,14 +89,42 @@ public class CartUseCase implements ICartServicePort {
         return getCartDetails(myCart,articleResponseList,ids);
     }
 
+    @Override
+    public void buyArticle() {
+        LocalDateTime buyDate = LocalDateTime.now();
+        String userName = authenticationPersistencePort.getUserName();
+        try {
+            List<CartSave> myCart = cartPersistencePort.findAllCartByUserName(userName);
+            List<ArticleResponse> articleResponseList =  cartStockPersistencePort
+                    .getArticleDetails(ConstantsUseCase.NUMBER_0,myCart.size(),
+                            false,this.getAllArticleIds(myCart),null,null);
+            validateData(articleResponseList);
+
+            validateQuantity(myCart,articleResponseList);
+
+            saveSaleInTransaction(myCart,buyDate);
+            cartPersistencePort.deleteCart(userName);
+            saveReport(userName,myCart,articleResponseList,buyDate);
+        } catch (TheItemIsNotAvailable e){
+            throw new TheItemIsNotAvailable(e.getMessage());
+        } catch (NoDataFoundException e){
+            throw new NoDataFoundException();
+        } catch (Exception e){
+            cartTransactionPersistencePort.returnRecord(userName,buyDate);
+            throw new PurchaseFailureException();
+        }
+    }
+
     private ArticleResponse validateArticleExists(Integer id) {
         return cartStockPersistencePort.existArticleById(id);
     }
 
-    private void validateAvailableQuantity(Integer quantityAvailable, Integer quantityRequest) {
+    private void validateAvailableQuantityException(Integer quantityAvailable, Integer quantityRequest,String name) {
         if (quantityAvailable < quantityRequest) {
             LocalDate dateOfNextSupply = cartPersistencePort.getNextDate();
-            throw new TheItemIsNotAvailable(ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply);
+            throw new TheItemIsNotAvailable( (name != null ?
+                    ConstantsUseCase.ARTICLE + name : ConstantsUseCase.COMILLAS) +
+                    ConstantsUseCase.SPACE +ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply);
         }
     }
 
@@ -210,11 +246,70 @@ public class CartUseCase implements ICartServicePort {
         return totalPrice;
     }
 
+
     private void validateAvailableQuantity(Integer quantityAvailable,Integer quantityRequest,CartDetail cartDetail) {
         if (quantityAvailable < quantityRequest) {
             LocalDate dateOfNextSupply = cartPersistencePort.getNextDate();
             cartDetail.setMessage(ConstantsUseCase.ITEM_NOT_AVAILABLE + dateOfNextSupply);
         }
+    }
+
+
+    private void validateQuantity(List<CartSave> myCart,List<ArticleResponse> articleResponseList){
+        for(ArticleResponse article: articleResponseList){
+            Integer quantity = getQuantityFromItem(myCart,article.getId());
+            validateAvailableQuantityException(article.getQuantity(),quantity,article.getName());
+        }
+    }
+
+    private void saveSaleInTransaction(List<CartSave> myCart,LocalDateTime localDateTime){
+        cartTransactionPersistencePort.saveBuy(getTransactionRequestList(myCart,localDateTime));
+    }
+
+    private List<TransactionRequest> getTransactionRequestList(List<CartSave> myCart,LocalDateTime localDateTime){
+        List<TransactionRequest> transactionRequestList = new ArrayList<>();
+        for(CartSave cart: myCart){
+            TransactionRequest transactionRequest = new TransactionRequest();
+            transactionRequest.setArticleId(cart.getIdArticle());
+            transactionRequest.setQuantity(cart.getQuantity());
+            transactionRequest.setEmail(cart.getEmail());
+            transactionRequest.setBuyDate(localDateTime);
+            transactionRequestList.add(transactionRequest);
+        }
+        return transactionRequestList;
+    }
+
+    private void saveReport(String userName,List<CartSave> myCart,List<ArticleResponse> articleResponseList,
+                            LocalDateTime buyDate){
+        ReportBuy reportBuy = new ReportBuy();
+
+        reportBuy.setUserName(userName);
+        reportBuy.setCreateDate(LocalDateTime.now());
+        reportBuy.setTotalPrice(getTotalPriceForReport(myCart));
+        reportBuy.setBuyDate(buyDate);
+        reportBuy.setArticleDetails(getArticleDetails(articleResponseList,myCart));
+
+        cartReportPersistencePort.saveReport(reportBuy);
+    }
+
+    private double getTotalPriceForReport(List<CartSave> myCart){
+        List<Integer> ids = getAllArticleIds(myCart);
+        return getTotalPrice(ids,myCart);
+    }
+
+    private List<ArticleDetail> getArticleDetails(List<ArticleResponse> articleResponseList,List<CartSave> myCart){
+        List<ArticleDetail> articleDetails = new ArrayList<>();
+        for(ArticleResponse articleResponse: articleResponseList){
+            ArticleDetail articleDetail = new ArticleDetail();
+
+            articleDetail.setArticleId(articleResponse.getId());
+            articleDetail.setQuantity(getQuantityFromItem(myCart,articleResponse.getId()));
+            articleDetail.setName(articleResponse.getName());
+            articleDetail.setUnitPrice(articleResponse.getPrice());
+
+            articleDetails.add(articleDetail);
+        }
+        return articleDetails;
     }
 
 }

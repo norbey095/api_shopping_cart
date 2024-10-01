@@ -2,8 +2,6 @@ package com.emazon.api_shopping_cart.infraestructure.output.entity;
 
 import com.emazon.api_shopping_cart.infraestructure.util.ConstantsInfTest;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -144,4 +144,14 @@ class ControllerCartAdvisorTest {
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(ConstantsInfTest.NEGATIVE_NOT_ALLOWED, response.getBody().getMessage());
     }
+
+    @Test
+    void testPurchaseFailureException() {
+        ResponseEntity<ExceptionResponse> response = advisor.handlePurchaseFailureException
+                (new PurchaseFailureException());
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(ConstantsInfTest.PURCHASE_FAILURE, response.getBody().getMessage());
+    }
 }

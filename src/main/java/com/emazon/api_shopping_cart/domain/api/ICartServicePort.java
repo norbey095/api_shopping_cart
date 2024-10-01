@@ -10,4 +10,6 @@ public interface ICartServicePort {
     void deleteCart(Integer idArticle);
 
     CartDetailResponse getCart(Integer page, Integer size,boolean descending,String categoryName,String brandName);
+
+    void buyArticle();
 }

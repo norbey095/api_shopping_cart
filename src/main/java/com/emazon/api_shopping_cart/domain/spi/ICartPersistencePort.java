@@ -16,9 +16,11 @@ public interface ICartPersistencePort {
 
     LocalDate getNextDate();
 
-    void deleteCart(Integer idArticle,String userName);
+    void deleteItemCart(Integer idArticle,String userName);
 
     void updateProductDateByEmail(String userName, LocalDateTime updateDate);
 
     List<CartSave> findAllCartByUserName(String userName);
+
+    void deleteCart(String userName);
 }

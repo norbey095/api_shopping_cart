@@ -94,4 +94,11 @@ public class ControllerCartAdvisor {
                 ExceptionResponseConstants.NEGATIVE_NOT_ALLOWED.getMessage()
                 , HttpStatus.BAD_REQUEST.toString()));
     }
+
+    @ExceptionHandler(PurchaseFailureException.class)
+    public ResponseEntity<ExceptionResponse> handlePurchaseFailureException(PurchaseFailureException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                ExceptionResponseConstants.PURCHASE_FAILURE.getMessage()
+                , HttpStatus.BAD_REQUEST.toString()));
+    }
 }

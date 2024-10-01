@@ -11,4 +11,6 @@ public interface ICartHandler {
     ResponseSuccess deleteArticle(Integer idArticle);
 
     CartDetailResponseDto getCart(Integer page, Integer size,boolean descending,String categoryName,String brandName);
+
+    ResponseSuccess buyCart();
 }

@@ -41,4 +41,10 @@ public class CartHandler implements ICartHandler {
         CartDetailResponse cartDetailResponse = cartSaveServicePort.getCart(page,size,descending,categoryName,brandName);
         return cartMapper.cartDetailResponseToCartDetailResponseDto(cartDetailResponse);
     }
+
+    @Override
+    public ResponseSuccess buyCart() {
+        cartSaveServicePort.buyArticle();
+        return new ResponseSuccess(ConstantsDto.BUY_CORRECT,HttpStatus.OK.toString());
+    }
 }
