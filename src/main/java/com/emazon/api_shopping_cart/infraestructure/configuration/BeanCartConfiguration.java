@@ -1,18 +1,14 @@
 package com.emazon.api_shopping_cart.infraestructure.configuration;
 
 import com.emazon.api_shopping_cart.domain.api.ICartServicePort;
-import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartTransactionPersistencePort;
+import com.emazon.api_shopping_cart.domain.spi.*;
 import com.emazon.api_shopping_cart.domain.usecase.CartUseCase;
+import com.emazon.api_shopping_cart.infraestructure.configuration.feign.IFeignClientReport;
 import com.emazon.api_shopping_cart.infraestructure.configuration.feign.IFeignClientStock;
 import com.emazon.api_shopping_cart.infraestructure.configuration.feign.IFeignClientTransaction;
-import com.emazon.api_shopping_cart.infraestructure.output.adapter.AuthenticationAdapter;
-import com.emazon.api_shopping_cart.infraestructure.output.adapter.CartJpaAdapter;
-import com.emazon.api_shopping_cart.infraestructure.output.adapter.CartStockAdapter;
-import com.emazon.api_shopping_cart.infraestructure.output.adapter.CartTransactionAdapter;
+import com.emazon.api_shopping_cart.infraestructure.output.adapter.*;
 import com.emazon.api_shopping_cart.infraestructure.output.mapper.ICartEntityMapper;
+import com.emazon.api_shopping_cart.infraestructure.output.mapper.ICartReportMapper;
 import com.emazon.api_shopping_cart.infraestructure.output.mapper.ICartStockMapper;
 import com.emazon.api_shopping_cart.infraestructure.output.repository.ICartRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +44,18 @@ public class BeanCartConfiguration {
     }
 
     @Bean
+    public ICartReportPersistencePort cartReportPersistencePort(IFeignClientReport feignClientReport,
+                                                                ICartReportMapper cartReportMapper) {
+        return new CartReportAdapter(feignClientReport,cartReportMapper);
+    }
+
+    @Bean
     public ICartServicePort cartSaveServicePort(ICartStockPersistencePort cartStockPersistencePort,
                                                 ICartPersistencePort cartSavePersistencePort,
                                                 IAthenticationPersistencePort authenticationPersistencePort,
-                                                ICartTransactionPersistencePort cartTransactionPersistencePort) {
+                                                ICartTransactionPersistencePort cartTransactionPersistencePort,
+                                                ICartReportPersistencePort cartReportPersistencePort) {
         return new CartUseCase(cartSavePersistencePort,cartStockPersistencePort,
-                authenticationPersistencePort,cartTransactionPersistencePort);
+                authenticationPersistencePort,cartTransactionPersistencePort,cartReportPersistencePort);
     }
 }

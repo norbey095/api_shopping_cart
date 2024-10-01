@@ -5,14 +5,13 @@ import com.emazon.api_shopping_cart.domain.exception.*;
 import com.emazon.api_shopping_cart.domain.model.CartSave;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetail;
 import com.emazon.api_shopping_cart.domain.model.cartdetail.CartDetailResponse;
+import com.emazon.api_shopping_cart.domain.model.report.ArticleDetail;
+import com.emazon.api_shopping_cart.domain.model.report.ReportBuy;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticlePriceResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.ArticleResponse;
 import com.emazon.api_shopping_cart.domain.model.stock.CategoryResponseList;
 import com.emazon.api_shopping_cart.domain.model.transaction.TransactionRequest;
-import com.emazon.api_shopping_cart.domain.spi.IAthenticationPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartStockPersistencePort;
-import com.emazon.api_shopping_cart.domain.spi.ICartTransactionPersistencePort;
+import com.emazon.api_shopping_cart.domain.spi.*;
 import com.emazon.api_shopping_cart.domain.util.ConstantsUseCase;
 
 import java.time.LocalDate;
@@ -30,15 +29,18 @@ public class CartUseCase implements ICartServicePort {
     private final IAthenticationPersistencePort authenticationPersistencePort;
     private final ICartStockPersistencePort cartStockPersistencePort;
     private final ICartTransactionPersistencePort cartTransactionPersistencePort;
+    private final ICartReportPersistencePort cartReportPersistencePort;
 
     public CartUseCase(ICartPersistencePort cartPersistencePort,
                        ICartStockPersistencePort cartStockPersistencePort,
                        IAthenticationPersistencePort authenticationPersistencePort,
-                       ICartTransactionPersistencePort cartTransactionPersistencePort) {
+                       ICartTransactionPersistencePort cartTransactionPersistencePort,
+                       ICartReportPersistencePort cartReportPersistencePort) {
         this.cartPersistencePort = cartPersistencePort;
         this.cartStockPersistencePort = cartStockPersistencePort;
         this.authenticationPersistencePort = authenticationPersistencePort;
         this.cartTransactionPersistencePort = cartTransactionPersistencePort;
+        this.cartReportPersistencePort = cartReportPersistencePort;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class CartUseCase implements ICartServicePort {
 
     @Override
     public void buyArticle() {
-        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime buyDate = LocalDateTime.now();
         String userName = authenticationPersistencePort.getUserName();
         try {
             List<CartSave> myCart = cartPersistencePort.findAllCartByUserName(userName);
@@ -100,14 +102,15 @@ public class CartUseCase implements ICartServicePort {
 
             validateQuantity(myCart,articleResponseList);
 
-            saveSaleInTransaction(myCart,localDateTime);
+            saveSaleInTransaction(myCart,buyDate);
             cartPersistencePort.deleteCart(userName);
+            saveReport(userName,myCart,articleResponseList,buyDate);
         } catch (TheItemIsNotAvailable e){
             throw new TheItemIsNotAvailable(e.getMessage());
         } catch (NoDataFoundException e){
             throw new NoDataFoundException();
         } catch (Exception e){
-            cartTransactionPersistencePort.returnRecord(userName,localDateTime);
+            cartTransactionPersistencePort.returnRecord(userName,buyDate);
             throw new PurchaseFailureException();
         }
     }
@@ -274,6 +277,39 @@ public class CartUseCase implements ICartServicePort {
             transactionRequestList.add(transactionRequest);
         }
         return transactionRequestList;
+    }
+
+    private void saveReport(String userName,List<CartSave> myCart,List<ArticleResponse> articleResponseList,
+                            LocalDateTime buyDate){
+        ReportBuy reportBuy = new ReportBuy();
+
+        reportBuy.setUserName(userName);
+        reportBuy.setCreateDate(LocalDateTime.now());
+        reportBuy.setTotalPrice(getTotalPriceForReport(myCart));
+        reportBuy.setBuyDate(buyDate);
+        reportBuy.setArticleDetails(getArticleDetails(articleResponseList,myCart));
+
+        cartReportPersistencePort.saveReport(reportBuy);
+    }
+
+    private double getTotalPriceForReport(List<CartSave> myCart){
+        List<Integer> ids = getAllArticleIds(myCart);
+        return getTotalPrice(ids,myCart);
+    }
+
+    private List<ArticleDetail> getArticleDetails(List<ArticleResponse> articleResponseList,List<CartSave> myCart){
+        List<ArticleDetail> articleDetails = new ArrayList<>();
+        for(ArticleResponse articleResponse: articleResponseList){
+            ArticleDetail articleDetail = new ArticleDetail();
+
+            articleDetail.setArticleId(articleResponse.getId());
+            articleDetail.setQuantity(getQuantityFromItem(myCart,articleResponse.getId()));
+            articleDetail.setName(articleResponse.getName());
+            articleDetail.setUnitPrice(articleResponse.getPrice());
+
+            articleDetails.add(articleDetail);
+        }
+        return articleDetails;
     }
 
 }
